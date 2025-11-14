@@ -32,7 +32,7 @@ int main() {
     gpio_set_dir(GPIO_DEBUG_LED, GPIO_OUT);
     gpio_put(GPIO_DEBUG_LED, true);
 
-    // I dont know why the f**k but uart 1 is not working
+    // I dont know why the f**k but uart0 is not working
     Uart uart(uart1, 4, 5 ,9600);
     uart.begin();
 
