@@ -11,9 +11,11 @@
 
 
 // *** INCLUDES ***
-#include "pico/stdlib.h"
+#include <pico/stdlib.h>
 #include "Log/Log.h"
 
+#include "Driver/TMC2209Driver.h"
+#include "Config.h"
 
 /**
  * @brief Main
@@ -27,11 +29,27 @@ int main() {
     //LOG_INFO("Initializing");
 
 
+    TMC2209Driver m_0({
+        GPIO_M0_STEP,
+        GPIO_M0_DIR,
+        GPIO_M0_DIAG,
+        GPIO_M_EN,
+        1
+    });
 
-    while (true) {
+    //TMC2209Driver m_1({
+    //    GPIO_M1_STEP,
+    //    GPIO_M1_DIR,
+    //    GPIO_M1_DIAG,
+    //    GPIO_M_EN,
+    //    1
+    //});
 
 
-   }
+    m_0.setPosition(10);
+
+    while (true){}
+    
 
     return 0;
 }
