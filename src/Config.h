@@ -1,0 +1,68 @@
+/**
+ * @file Config.h
+ * @author 
+ * @brief Main configuration file
+ * @version 0.1
+ * @date 2026-03-12
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
+#pragma once
+
+
+// *** DEFINES ***
+
+// --------------------------------------------------
+// COM
+// --------------------------------------------------
+#define GPIO_UART0_TX                       12
+#define GPIO_UART0_RX                       13
+
+#define GPIO_UART1_TX                       4
+#define GPIO_UART1_RX                       5
+
+// --------------------------------------------------
+// MOTORS
+// --------------------------------------------------
+// Servo PWM
+#define GPIO_SERVO0_PWM                     0
+#define GPIO_SERVO1_PWM                     1
+
+// DC Motor
+#define GPIO_M0_DC_OUT1                     9
+#define GPIO_M0_DC_OUT2                     10
+#define GPIO_M_EN                           11
+
+// Stepper
+#define GPIO_M0_DIAG                        20
+#define GPIO_M0_STEP                        21
+#define GPIO_M0_DIR                         22
+
+#define GPIO_M1_DIAG                        17
+#define GPIO_M1_STEP                        18
+#define GPIO_M1_DIR                         19
+
+#define GPIO_M2_DIAG                        14
+#define GPIO_M2_STEP                        15
+#define GPIO_M2_DIR                         16
+
+// --------------------------------------------------
+// SWITCHES
+// --------------------------------------------------
+
+// End switches
+#define GPIO_SW_0                           3
+#define GPIO_SW_1                           6
+#define GPIO_SW_2                           7
+#define GPIO_SW_3                           8
+
+// CTRL
+#define GPIO_CTRL                           26
+
+// --------------------------------------------------
+// LEDS
+// --------------------------------------------------
+#define GPIO_DEBUG_LED                      25
+#define GPIO_LED_0                          27
+#define GPIO_LED_1                          28

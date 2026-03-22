@@ -49,16 +49,26 @@ add_executable(${PROJECT_NAME}
 	${HEADER_FILES}
 )
 
+# Compile stepper.pio → stepper.pio.h at build time
+pico_generate_pio_header(${PROJECT_NAME}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Steckinator/Driver/stepper.pio
+)
+
 pico_set_program_name(${PROJECT_NAME} "steckinator")
 pico_set_program_version(${PROJECT_NAME} "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(${PROJECT_NAME} 0)
-pico_enable_stdio_usb(${PROJECT_NAME} 0)
+pico_enable_stdio_usb(${PROJECT_NAME} 1)
 
 # Add the standard library to the build
 target_link_libraries(${PROJECT_NAME}
-        pico_stdlib)
+    pico_stdlib
+    hardware_pio
+    hardware_dma
+    hardware_gpio
+    hardware_clocks
+)
 
 # Add the standard include files to the build
 target_include_directories(${PROJECT_NAME} PRIVATE

@@ -10,7 +10,7 @@
  */
 
 // *** INCLUDES ***
-#include "Uart/Uart.h"
+#include "Steckinator/Uart/Uart.h"
 
 // *** PUPLIC FUNCTIONS ***
 
