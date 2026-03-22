@@ -1,0 +1,55 @@
+;
+; stepper.pio
+; Step pulse generator — runs entirely in hardware, no CPU involvement.
+; One state machine per motor.
+;
+.program step_gen
+.side_set 1          ; side-set bit drives the STEP pin directly
+
+; Autopull fills OSR from TX FIFO automatically (threshold=32).
+; CPU / DMA writes step counts; the SM pulses the STEP pin N times at
+; the configured frequency and then stalls waiting for the next count.
+;
+; Timing: 4 PIO clock cycles per step
+;   cycle 1  — nop   side 1  (STEP high)
+;   cycle 2  — nop   side 0  (STEP low)
+;   cycles 3/4 — jmp x--     (decrement + branch)
+
+    pull block         side 0   ; wait for count in TX FIFO → OSR, STEP low
+    mov x, osr         side 0   ; copy count to scratch X
+loop:
+    nop                side 1   ; STEP high
+    nop                side 0   ; STEP low
+    jmp x-- loop       side 0   ; loop until X wraps (counts down to 0)
+
+% c-sdk {
+    #include "hardware/clocks.h"
+
+    /**
+    * Initialise a step_gen state machine.
+    *
+    * @param pio       PIO block (pio0 / pio1)
+    * @param sm        State machine index (0–3)
+    * @param offset    Program offset returned by pio_add_program()
+    * @param step_pin  GPIO used as STEP output
+    * @param step_hz   Desired step frequency in Hz
+    */
+    static inline void step_gen_program_init(PIO pio, uint sm, uint offset, uint step_pin, float step_hz) {
+        pio_sm_config c = step_gen_program_get_default_config(offset);
+
+        // side-set controls the STEP pin
+        sm_config_set_sideset_pins(&c, step_pin);
+        pio_gpio_init(pio, step_pin);
+        pio_sm_set_consecutive_pindirs(pio, sm, step_pin, 1, true);
+
+        // autopull: OSR refilled from TX FIFO automatically at 32-bit threshold
+        sm_config_set_out_shift(&c, false, true, 32);
+
+        // clock divider: 4 PIO cycles per step pulse
+        float div = (float)clock_get_hz(clk_sys) / (step_hz * 4.0f);
+        sm_config_set_clkdiv(&c, div);
+
+        pio_sm_init(pio, sm, offset, &c);
+        pio_sm_set_enabled(pio, sm, true);
+    }
+%}
