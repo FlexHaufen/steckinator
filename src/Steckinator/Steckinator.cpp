@@ -9,6 +9,7 @@
 #include "Log/Log.h"
 
 #include "Driver/Stepper/StepperMotor.h"
+#include "Driver/VacuumPump/VacuumPump.h"
 
 namespace Steckinator {
 
@@ -31,12 +32,16 @@ namespace Steckinator {
 
         //! Just some debug code to see if the motors are working
         
-        StepperMotor motor0(pio0, 0, GPIO_M0_STEP, GPIO_M0_DIR, 10.f);
-        StepperMotor motor1(pio0, 1, GPIO_M1_STEP, GPIO_M1_DIR, 10.f);
+        //StepperMotor motor0(pio0, 0, GPIO_M0_STEP, GPIO_M0_DIR, 10.f);
+        //StepperMotor motor1(pio0, 1, GPIO_M1_STEP, GPIO_M1_DIR, 10.f);
 
-        motor0.move(100);
-        motor1.move(-100);
+        //motor0.move(100);
+        //motor1.move(-100);
 
+
+        //VacuumPump vacuumPump;
+        //vacuumPump.Init(GPIO_M0_DC_OUT1, GPIO_M0_DC_OUT2);
+        //vacuumPump.On();
 
         while (true) {
 
