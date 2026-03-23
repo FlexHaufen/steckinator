@@ -10,7 +10,7 @@
  */
 
 // *** INCLUDES ***
-#include "Steckinator/Driver/StepperMotor.h"
+#include "Steckinator/Driver/Stepper/StepperMotor.h"
 #include "hardware/clocks.h"
 #include <cmath>
 #include <cassert>

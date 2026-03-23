@@ -8,7 +8,7 @@
 #include "Config.h"
 #include "Log/Log.h"
 
-#include "Driver/StepperMotor.h"
+#include "Driver/Stepper/StepperMotor.h"
 
 namespace Steckinator {
 
@@ -16,6 +16,15 @@ namespace Steckinator {
 
     Steckinator::Steckinator() {
         stdio_init_all();
+
+        m_led_power.Init(GPIO_DEBUG_LED);
+        m_led_status.Init(GPIO_LED_0);
+        m_led_error.Init(GPIO_LED_1);
+
+        m_led_power.On();
+        //m_led_status.On();
+        //m_led_error.On();
+
     }
 
     void Steckinator::Run() {

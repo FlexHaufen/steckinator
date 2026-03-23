@@ -1,6 +1,8 @@
 
 #pragma once
 
+// *** INCLUDES ***
+#include "Driver/Led/Led.h"
 
 
 namespace Steckinator {
@@ -13,6 +15,14 @@ namespace Steckinator {
         ~Steckinator() {}
 
         void Run();
+
+
+    private:
+
+        Led m_led_power;
+        Led m_led_status;
+        Led m_led_error;
+
 
 
     };
