@@ -1,6 +1,5 @@
 /**
  * @file GCodeParser.h
- * @author flexhaufen
  * @brief GCodeParser
  * @version 0.1
  * @date 2026-03-05
@@ -10,12 +9,14 @@
  */
 #pragma once
 
-
+// *** INCLUDES ***
 #include <string>
-#include "Motion/MotionEvent.h"
 
+#include "Steckinator/Config.h"
+#include "Steckinator/Motion/MotionEvent.h"
+
+// *** NAMESPACE ***
 namespace Steckinator {
-
 
     class GCodeParser {
     public:
@@ -33,14 +34,13 @@ namespace Steckinator {
                 
                 switch (*p_line) {
 
-                    case 'G':
+                    case GCODE_COMMAND_G:
                         {
-                            // TODO (inj):  Maybe this can also be done by
-                            //              just casting the number into "MotionType"
                             uint8_t g = std::atoi(p_line + 1);
                             switch (g) {
-                                case 0: event.type == MotionType::G0; break;
-                                case 1: event.type == MotionType::G1; break;
+                                case  0: event.type == MotionType::G0; break;
+                                case  1: event.type == MotionType::G1; break;
+                                case 28: event.type == MotionType::G28; break;
                                 
                                 default: 
                                     LOG_ERROR("Received invalid G__");
@@ -48,17 +48,33 @@ namespace Steckinator {
                             }                        
                         }
                         break;
+
+                    case GCODE_COMMAND_M:
+                        {
+                            uint8_t m = std::atoi(p_line + 1);
+                            switch (m) {
+                                case 10: event.type == MotionType::M10; break;
+                                case 11: event.type == MotionType::M11; break;
+                                
+                                default: 
+                                    LOG_ERROR("Received invalid M__");
+                                    break;
+                            }  
+                        }
                     
-                    case 'X':
+                    case GCODE_AXIS_X:
                         event.x = std::atof(p_line + 1);
                         break;
-                    case 'Y':
+                    case GCODE_AXIS_Y:
                         event.y = std::atof(p_line + 1);
                         break;
-                    case 'Z':
+                    case GCODE_AXIS_Z:
                         event.z = std::atof(p_line + 1);
                         break;
-                    case 'F':
+                    case GCODE_AXIS_A:
+                        event.a = std::atof(p_line + 1);
+                        break;
+                    case GCODE_FEEDRATE:
                         event.f = std::atof(p_line + 1);
                         break;
 

@@ -1,6 +1,5 @@
 /**
  * @file StepperMotor.cpp
- * @author flexhaufen
  * @brief Implementation of StepperMotor
  * @version 0.1
  * @date 2026-03-22
@@ -10,8 +9,9 @@
  */
 
 // *** INCLUDES ***
-#include "Steckinator/Driver/StepperMotor.h"
-#include "hardware/clocks.h"
+#include "Steckinator/Driver/Stepper/StepperMotor.h"
+
+#include <hardware/clocks.h>
 #include <cmath>
 #include <cassert>
 
@@ -56,7 +56,13 @@ namespace Steckinator {
     m_stepHz(stepHz) {
         
         // ── GPIO setup ────────────────────────────────────────────────────────
-        gpio_init(m_pinDir);  gpio_set_dir(m_pinDir, GPIO_OUT);  gpio_put(m_pinDir, 1);
+        gpio_init(m_pinDir);
+        gpio_set_dir(m_pinDir, GPIO_OUT);
+        gpio_set_function(m_pinDir, GPIO_FUNC_SIO);     // this is just in case the pin is used for something else by default
+        gpio_put(m_pinDir, 1);
+
+
+        // TODO (flex): Implement enable pin
         //gpio_init(m_pinEnable);   gpio_set_dir(m_pinEnable,  GPIO_OUT);  gpio_put(m_pinEnable,  1); // disabled
 
         // ── PIO setup ─────────────────────────────────────────────────────────

@@ -1,6 +1,5 @@
 /**
  * @file MotionEvent.h
- * @author flexhaufen
  * @brief Types for Motion
  * @version 0.1
  * @date 2026-03-05
@@ -10,17 +9,21 @@
  */
 #pragma once
 
-#include <string>
+// *** INCLUDES ***
+#include <deque>
+#include <optional>
 
+// *** NAMESPACE ***
 namespace Steckinator {
-
-
 
 
     enum class MotionType {
         INVALID = 0,
-        G0,
-        G1
+        G0,                     // Rapid movement       [x, y, z, a]
+        G1,                     //                      [x, y, z, a, f]
+        G28,                    // Home all axes
+        M10,                    // Enable gripper
+        M11                     // Disable gripper
     };
 
 
@@ -31,9 +34,25 @@ namespace Steckinator {
         float x = 0;
         float y = 0;
         float z = 0;
-        float f = 0;    // feedrate
+        float a = 0;
+        float f = 0;    // GCODE_FEEDRATE
 
     };
 
+    class MotionQueue {
+    public:
+        MotionQueue()  {}
+
+
+        void Push(const MotionEvent& motionEvent) { m_motionQueue.emplace_back(); }
+        //std::optional<MotionEvent> Pop() { return m_motionQueue.front(); }
+
+    private:
+
+        // ** Members **
+        std::deque<MotionEvent> m_motionQueue;
+
+
+    };
 
 }

@@ -1,6 +1,5 @@
 /**
  * @file Log.h
- * @author flexhaufen
  * @brief Simple logger
  * @version 0.1
  * @date 2026-03-05
@@ -8,13 +7,13 @@
  * @copyright Copyright (c) 2026
  * 
  */
-
-
-
 #pragma once
+
+// *** INCLUDES ***
 #include <stdio.h>
 
-#define LOG_ENABLE      true
+// *** DEFINES ***
+#define LOG_ENABLE      true        // true: logger enabled
 
 
 #if LOG_ENABLE

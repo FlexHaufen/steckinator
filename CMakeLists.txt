@@ -51,7 +51,7 @@ add_executable(${PROJECT_NAME}
 
 # Compile stepper.pio → stepper.pio.h at build time
 pico_generate_pio_header(${PROJECT_NAME}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Steckinator/Driver/stepper.pio
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Steckinator/Driver/Stepper/stepper.pio
 )
 
 pico_set_program_name(${PROJECT_NAME} "steckinator")
