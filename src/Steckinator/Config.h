@@ -1,6 +1,5 @@
 /**
  * @file Config.h
- * @author 
  * @brief Main configuration file
  * @version 0.1
  * @date 2026-03-12

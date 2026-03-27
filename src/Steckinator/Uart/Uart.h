@@ -1,6 +1,5 @@
 /**
  * @file Uart.h
- * @author flexhaufen
  * @brief Implementation of the Uart consol
  * @version 0.1
  * @date 2025-11-12
@@ -16,24 +15,28 @@
 #include "hardware/gpio.h"
 #include <string>
 
+// *** NAMESPACE ***
+namespace Steckinator {
 
-/**
- * @brief Uart
- * 
- */
-class Uart {
-public:
-    Uart(uart_inst_t *uart, uint txPin, uint rxPin, uint baudrate);
+    /**
+     * @brief Uart
+     * 
+     */
+    class Uart {
+    public:
+        Uart(uart_inst_t *uart, uint txPin, uint rxPin, uint baudrate);
 
-    void begin();
-    void writeLine(const std::string &s);
-    int available();
-    std::string readLine();
-    void flush();
+        void begin();
+        void writeLine(const std::string &s);
+        int available();
+        std::string readLine();
+        void flush();
 
-private:
-    uart_inst_t *m_uart;
-    uint m_pinTx;
-    uint m_pinRx;
-    uint m_baudrate;
-};
+    private:
+        uart_inst_t *m_uart;
+        uint m_pinTx;
+        uint m_pinRx;
+        uint m_baudrate;
+    };
+}
+

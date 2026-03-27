@@ -1,6 +1,5 @@
 /**
  * @file StepperMotor.cpp
- * @author flexhaufen
  * @brief Implementation of StepperMotor
  * @version 0.1
  * @date 2026-03-22
@@ -11,7 +10,8 @@
 
 // *** INCLUDES ***
 #include "Steckinator/Driver/Stepper/StepperMotor.h"
-#include "hardware/clocks.h"
+
+#include <hardware/clocks.h>
 #include <cmath>
 #include <cassert>
 

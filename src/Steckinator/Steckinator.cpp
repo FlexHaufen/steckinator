@@ -1,7 +1,14 @@
+/**
+ * @file Steckinator.cpp
+ * @brief Implementation of Steckinator
+ * @version 0.1
+ * @date 2026-03-27
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
 
-
-
-
+// *** INCLUDES ***
 #include "Steckinator/Steckinator.h"
 
 #include <pico/stdlib.h>
@@ -13,6 +20,7 @@
 #include "Steckinator/Driver/Stepper/StepperMotor.h"
 #include "Steckinator/Driver/VacuumPump/VacuumPump.h"
 
+// *** NAMESPACE ***
 namespace Steckinator {
 
 

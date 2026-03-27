@@ -1,6 +1,5 @@
 /**
  * @file GCodeParser.h
- * @author flexhaufen
  * @brief GCodeParser
  * @version 0.1
  * @date 2026-03-05
@@ -16,7 +15,7 @@
 #include "Steckinator/Config.h"
 #include "Steckinator/Motion/MotionEvent.h"
 
-
+// *** NAMESPACE ***
 namespace Steckinator {
 
     class GCodeParser {

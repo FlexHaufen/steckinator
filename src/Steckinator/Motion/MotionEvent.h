@@ -1,6 +1,5 @@
 /**
  * @file MotionEvent.h
- * @author flexhaufen
  * @brief Types for Motion
  * @version 0.1
  * @date 2026-03-05
@@ -10,12 +9,12 @@
  */
 #pragma once
 
+// *** INCLUDES ***
 #include <deque>
 #include <optional>
 
+// *** NAMESPACE ***
 namespace Steckinator {
-
-
 
 
     enum class MotionType {
