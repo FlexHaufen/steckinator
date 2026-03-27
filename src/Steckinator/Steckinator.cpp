@@ -19,6 +19,7 @@
 
 #include "Steckinator/Driver/Stepper/StepperMotor.h"
 #include "Steckinator/Driver/VacuumPump/VacuumPump.h"
+#include "Steckinator/Driver/Servo/Servo.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -52,6 +53,15 @@ namespace Steckinator {
         //VacuumPump vacuumPump;
         //vacuumPump.Init(GPIO_M0_DC_OUT1, GPIO_M0_DC_OUT2);
         //vacuumPump.On();
+
+        Servo servo0;
+        servo0.Init(GPIO_SERVO0_PWM);
+        servo0.SetAngle(180);
+
+        Servo servo1;
+        servo1.Init(GPIO_SERVO1_PWM);
+        servo1.SetAngle(180);
+
 
         while (true) {
 
