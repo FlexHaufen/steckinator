@@ -10,21 +10,21 @@
  */
 #pragma once
 
-
 // *** DEFINES ***
 
+
 // --------------------------------------------------
+// GPIOs
+// --------------------------------------------------
+
 // COM
-// --------------------------------------------------
 #define GPIO_UART0_TX                       12
 #define GPIO_UART0_RX                       13
 
 #define GPIO_UART1_TX                       4
 #define GPIO_UART1_RX                       5
 
-// --------------------------------------------------
 // MOTORS
-// --------------------------------------------------
 // Servo PWM
 #define GPIO_SERVO0_PWM                     0
 #define GPIO_SERVO1_PWM                     1
@@ -47,22 +47,31 @@
 #define GPIO_M2_STEP                        15
 #define GPIO_M2_DIR                         16
 
-// --------------------------------------------------
 // SWITCHES
-// --------------------------------------------------
-
 // End switches
 #define GPIO_SW_0                           3
 #define GPIO_SW_1                           6
 #define GPIO_SW_2                           7
 #define GPIO_SW_3                           8
-
 // CTRL
 #define GPIO_CTRL                           26
 
-// --------------------------------------------------
 // LEDS
-// --------------------------------------------------
 #define GPIO_DEBUG_LED                      25
 #define GPIO_LED_0                          27
 #define GPIO_LED_1                          28
+
+
+// --------------------------------------------------
+// GCODE
+// --------------------------------------------------
+
+#define GCODE_COMMAND_G   'G'
+#define GCODE_COMMAND_M   'M'
+
+#define GCODE_AXIS_X      'X'
+#define GCODE_AXIS_Y      'Y'
+#define GCODE_AXIS_Z      'Z'
+#define GCODE_AXIS_A      'A'
+
+#define GCODE_FEEDRATE    'F'

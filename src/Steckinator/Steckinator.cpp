@@ -8,8 +8,10 @@
 #include "Config.h"
 #include "Log/Log.h"
 
-#include "Driver/Stepper/StepperMotor.h"
-#include "Driver/VacuumPump/VacuumPump.h"
+#include "Steckinator/GCodeParser/GCodeParser.h"
+
+#include "Steckinator/Driver/Stepper/StepperMotor.h"
+#include "Steckinator/Driver/VacuumPump/VacuumPump.h"
 
 namespace Steckinator {
 
