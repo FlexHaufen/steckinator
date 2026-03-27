@@ -34,6 +34,7 @@ namespace Steckinator {
             m_pin = pin;
             gpio_init(m_pin);
             gpio_set_dir(m_pin, GPIO_OUT);
+            gpio_set_function(m_pin, GPIO_FUNC_SIO);
             gpio_put(m_pin, false);
         }
 

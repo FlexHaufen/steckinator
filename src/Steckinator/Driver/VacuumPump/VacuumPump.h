@@ -33,8 +33,8 @@ namespace Steckinator {
         void Init(uint pinIn1, uint pinIn2) {
             m_pinIn1 = pinIn1;
             m_pinIn2 = pinIn2;
-            gpio_init(m_pinIn1); gpio_set_dir(m_pinIn1, GPIO_OUT); gpio_put(m_pinIn1, false);
-            gpio_init(m_pinIn2); gpio_set_dir(m_pinIn2, GPIO_OUT); gpio_put(m_pinIn2, false);
+            gpio_init(m_pinIn1); gpio_set_dir(m_pinIn1, GPIO_OUT); gpio_set_function(m_pinIn1, GPIO_FUNC_SIO); gpio_put(m_pinIn1, false);
+            gpio_init(m_pinIn2); gpio_set_dir(m_pinIn2, GPIO_OUT); gpio_set_function(m_pinIn2, GPIO_FUNC_SIO); gpio_put(m_pinIn2, false);
         }
 
         void On() { gpio_put(m_pinIn1, true); }
