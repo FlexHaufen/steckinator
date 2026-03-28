@@ -22,6 +22,7 @@
 // *** NAMESPACE ***
 namespace Steckinator {
     
+    using Steps = int32_t;
 
     
     class StepperMotor {
@@ -39,8 +40,14 @@ namespace Steckinator {
          */
         void Init(PIO pio, uint stateMachineIndex, uint pinStep, uint pinDir);
 
+        void MoveRelative(Steps deltaSteps);
+        
+        bool IsBusy();
 
-        void Move(int32_t steps);
+        int32_t GetPosition() const { return m_currentSteps; }
+        void SetPosition(int32_t pos) { m_currentSteps = pos; }  // for homing
+
+        void SetSpeed(float stepsPerSecond);
 
     private:
         
@@ -49,6 +56,9 @@ namespace Steckinator {
         uint m_stateMachineIndex;
         uint m_pinStep;
         uint m_pinDir;
+        Steps m_currentSteps = 0;
+        uint m_program_offset = 0;
+
 
     };
 }

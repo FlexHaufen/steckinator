@@ -15,10 +15,8 @@
 #include "Config.h"
 #include "Log/Log.h"
 
-#include "Steckinator/GCodeParser/GCodeParser.h"
-
-#include "Steckinator/Driver/Stepper/StepperMotor.h"
-#include "Steckinator/Driver/VacuumPump/VacuumPump.h"
+#include "GCodeParser/GCodeParser.h"
+#include "Motion/MotionController.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -29,36 +27,37 @@ namespace Steckinator {
         stdio_init_all();
 
         m_led_power.Init(GPIO_DEBUG_LED);
-        m_led_status.Init(GPIO_LED_0);
-        m_led_error.Init(GPIO_LED_1);
+        //LOG_WAIT_FOR_USB;
 
-        m_led_power.On();
         //m_led_status.On();
         //m_led_error.On();
-
+        m_led_power.On();
     }
 
     void Steckinator::Run() {
 
         //! Just some debug code to see if the motors are working
-        
-        
-        // TODO (flex): Implement enable pin
-        gpio_init(GPIO_M_EN);   gpio_set_dir(GPIO_M_EN,  GPIO_OUT);  gpio_put(GPIO_M_EN,  false); // disabled
+        LOG_INFO("Setup");
 
-        StepperMotor motor0;
-        motor0.Init(pio0, 0, GPIO_M0_STEP, GPIO_M0_DIR);
-        motor0.Move(-3000);
+        gpio_init(GPIO_M_EN);
+        gpio_set_dir(GPIO_M_EN, GPIO_OUT);
+        gpio_put(GPIO_M_EN, false);
 
+   
+        MotionController mc;
+        mc.Init();
 
-        //VacuumPump vacuumPump;
-        //vacuumPump.Init(GPIO_M0_DC_OUT1, GPIO_M0_DC_OUT2);
-        //vacuumPump.On();
+        // TODO do the events move relative every time?
+        mc.Push({ MotionType::G28,});
+        mc.Push({ MotionType::G0, .x=400, .y=0});
+        mc.Push({ MotionType::G0, .x=400, .y=400});
+        mc.Push({ MotionType::G0, .x=10, .y=400});
+        mc.Push({ MotionType::G0, .x=10, .y=10});
+
 
         while (true) {
-
-
-            sleep_ms(1);
+            mc.Update();
+            sleep_ms(10);
         }
 
 

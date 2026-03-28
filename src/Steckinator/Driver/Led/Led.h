@@ -39,7 +39,7 @@ namespace Steckinator {
         void On() { gpio_put(m_pin, true); }
         void Off() { gpio_put(m_pin, false); }
         void Toggle() { gpio_put(m_pin, !gpio_get(m_pin)); }
-
+        void Set(bool value) { gpio_put(m_pin, value); }
 
     private:
         // ** Members **
