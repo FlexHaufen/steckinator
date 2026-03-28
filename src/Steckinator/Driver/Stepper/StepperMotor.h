@@ -23,25 +23,10 @@
 namespace Steckinator {
     
 
-    /**
-     * @brief Wrapper around the RP2040 PIO + DMA stepper driver.
-     * 
-     * Each instance owns:  
-     *  - one PIO state machine  (generates STEP pulses in hardware)  
-     *  - one DMA channel        (feeds step counts into the TX FIFO)  
-     *  - DIR / EN GPIO pins  
-     *
-     * Motion is entirely interrupt-free: the CPU only writes a count and
-     * returns. All pulsing happens in hardware while the main loop runs.
-     *
-     * Usage:
-     *   StepperMotor m(pio0, 0, 2, 3, 4, 10'000.0f);
-     *   m.enable();
-     *   m.move(800);              // non-blocking, returns immediately
-     *   m.moveDma(buf, len);      // DMA-driven sequence, also non-blocking
-     */
+    
     class StepperMotor {
     public:
+
 
         /**
          * Construct and fully initialise a stepper motor.
@@ -51,127 +36,19 @@ namespace Steckinator {
          * @param stateMachineIndex         State machine index (0–3). Each motor needs its own.
          * @param pinStep                   GPIO for STEP output.
          * @param dirPin                    GPIO for DIR  output.
-         * @param stepHz    Step pulse frequency in Hz (e.g. 10000 = 10 kHz).
-         *                  This is the maximum speed; individual move() calls
-         *                  inherit this rate unless you call setSpeed() first.
          */
-        StepperMotor(PIO pio, uint stateMachineIndex, uint pinStep, uint pinDir, float stepHz = 10'000.0f);
-
-        // Non-copyable — each instance owns hardware resources
-        StepperMotor(const StepperMotor&)            = delete;
-        StepperMotor& operator=(const StepperMotor&) = delete;
-
-        // Movable
-        StepperMotor(StepperMotor&&)            = default;
-        StepperMotor& operator=(StepperMotor&&) = default;
-
-        ~StepperMotor();
+        void Init(PIO pio, uint stateMachineIndex, uint pinStep, uint pinDir);
 
 
-        // ── Speed ──────────────────────────────────────────────────────────────
-
-        /**
-         * Change the step frequency at runtime.
-         * Takes effect on the next move() or moveDma() call.
-         * Internally re-programs the PIO clock divider.
-         *
-         * @param stepHz  New frequency in Hz.
-         */
-        void setSpeed(float stepHz);
-
-        /** Returns the current configured step frequency in Hz. */
-        float getSpeed() const;
-
-        // ── Motion ────────────────────────────────────────────────────────────
-
-        /**
-         * Non-blocking single move.
-         *
-         * Sets DIR then pushes the step count into the PIO TX FIFO.
-         * Returns immediately — the state machine pulses STEP in hardware.
-         *
-         * Positive steps = forward (DIR high), negative = reverse (DIR low).
-         *
-         * Note: the TX FIFO is 4 words deep. If you call move() faster than the
-         * motor can execute steps the call will block until there is FIFO space.
-         * For continuous streaming use moveDma() instead.
-         *
-         * @param steps  Signed step count.
-         */
-        void move(int32_t steps);
-
-        /**
-         * DMA-driven move sequence.
-         *
-         * Streams an array of step counts into the TX FIFO via DMA, paced by
-         * the PIO DREQ signal so the FIFO never overflows.
-         * Returns immediately — motion continues in hardware.
-         *
-         * The buffer must remain valid in RAM until isBusy() returns false.
-         * Typical use: pre-computed acceleration ramp stored as a static array.
-         *
-         * DIR is not changed by this function — set it with setDirection() first
-         * if needed.
-         *
-         * @param buf  Pointer to array of step counts (uint32_t each).
-         * @param len  Number of entries in buf.
-         */
-        void moveDma(const uint32_t* buf, uint len);
-
-        /**
-         * Set the direction pin explicitly, independent of move().
-         * Useful before moveDma() when you want explicit control.
-         *
-         * @param forward  true = forward (DIR high), false = reverse (DIR low).
-         */
-        void setDirection(bool forward);
-
-        /**
-         * Block until the current move finishes.
-         * Waits for both DMA transfer and TX FIFO to drain.
-         */
-        void waitUntilDone() const;
-
-        /**
-         * Returns true while the motor is still executing steps.
-         * Checks both the DMA channel and the PIO TX FIFO.
-         */
-        bool isBusy() const;
-
-        /**
-         * Immediately stop all motion.
-         * Aborts the DMA transfer and clears the TX FIFO.
-         * The motor holds position (coils remain energised if enabled).
-         */
-        void stop();
-
-        // ── Accessors ─────────────────────────────────────────────────────────
-
-        PIO  getPio() const { return m_pio; }
-        uint getSm()  const { return m_stateMachineIndex;  }
-        uint getDmaChannel() const { return m_dmaChannel; }
+        void Move(int32_t steps);
 
     private:
-        // ── Internal helpers ──────────────────────────────────────────────────
+        
+        // ** Members ** 
+        PIO m_pio;
+        uint m_stateMachineIndex;
+        uint m_pinStep;
+        uint m_pinDir;
 
-        /** Load the PIO program onto the block if not already loaded. */
-        static uint loadProgram(PIO pio);
-
-        /** Apply m_stepHz to the running state machine's clock divider. */
-        void applyClockDiv();
-
-        // ── Member data ───────────────────────────────────────────────────────
-
-        PIO   m_pio;
-        uint  m_stateMachineIndex;
-        uint  m_dmaChannel;
-        uint  m_pinStep;
-        uint  m_pinDir;
-        uint  m_pinEnable;
-        float m_stepHz;
-
-        // Shared PIO program offsets — one per PIO block, loaded once.
-        static int s_pio0Offset;
-        static int s_pio1Offset;
     };
 }

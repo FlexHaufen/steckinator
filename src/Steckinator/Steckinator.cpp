@@ -42,11 +42,13 @@ namespace Steckinator {
 
         //! Just some debug code to see if the motors are working
         
-        //StepperMotor motor0(pio0, 0, GPIO_M0_STEP, GPIO_M0_DIR, 10.f);
-        //StepperMotor motor1(pio0, 1, GPIO_M1_STEP, GPIO_M1_DIR, 10.f);
+        
+        // TODO (flex): Implement enable pin
+        gpio_init(GPIO_M_EN);   gpio_set_dir(GPIO_M_EN,  GPIO_OUT);  gpio_put(GPIO_M_EN,  false); // disabled
 
-        //motor0.move(100);
-        //motor1.move(-100);
+        StepperMotor motor0;
+        motor0.Init(pio0, 0, GPIO_M0_STEP, GPIO_M0_DIR);
+        motor0.Move(-3000);
 
 
         //VacuumPump vacuumPump;
