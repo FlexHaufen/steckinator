@@ -68,15 +68,15 @@ namespace Steckinator {
                     case GCODE_AXIS_Y:
                         event.y = std::atof(p_line + 1);
                         break;
-                    case GCODE_AXIS_Z:
-                        event.z = std::atof(p_line + 1);
-                        break;
-                    case GCODE_AXIS_A:
-                        event.a = std::atof(p_line + 1);
-                        break;
-                    case GCODE_FEEDRATE:
-                        event.f = std::atof(p_line + 1);
-                        break;
+                    //case GCODE_AXIS_Z:
+                    //    event.z = std::atof(p_line + 1);
+                    //    break;
+                    //case GCODE_AXIS_A:
+                    //    event.a = std::atof(p_line + 1);
+                    //    break;
+                    //case GCODE_FEEDRATE:
+                    //    event.f = std::atof(p_line + 1);
+                    //    break;
 
                     default:
                         // any other character will be skipped

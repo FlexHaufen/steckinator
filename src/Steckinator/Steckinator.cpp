@@ -25,20 +25,19 @@ namespace Steckinator {
 
     Steckinator::Steckinator() {
         stdio_init_all();
+        //LOG_WAIT_FOR_USB;
+        LOG_INFO("Setup");
 
         m_led_power.Init(GPIO_DEBUG_LED);
-        //LOG_WAIT_FOR_USB;
-
-        //m_led_status.On();
-        //m_led_error.On();
         m_led_power.On();
     }
 
     void Steckinator::Run() {
-
         //! Just some debug code to see if the motors are working
-        LOG_INFO("Setup");
 
+        // TODO (flex): Move this shit to the StepperMotor driver
+        // currently this is used for enabling the drivers
+        // as the enable pin is common
         gpio_init(GPIO_M_EN);
         gpio_set_dir(GPIO_M_EN, GPIO_OUT);
         gpio_put(GPIO_M_EN, false);
@@ -47,14 +46,14 @@ namespace Steckinator {
         MotionController mc;
         mc.Init();
 
-        // TODO do the events move relative every time?
-        mc.Push({ MotionType::G28,});
-        mc.Push({ MotionType::G0, .x=400, .y=0});
-        mc.Push({ MotionType::G0, .x=400, .y=400});
-        mc.Push({ MotionType::G0, .x=10, .y=400});
-        mc.Push({ MotionType::G0, .x=10, .y=10});
+        mc.Push({ MotionType::G28 });           // Homing
+        mc.Push({ MotionType::G0, .x=400 });
+        mc.Push({ MotionType::G0, .y=400 });
+        mc.Push({ MotionType::G0, .x=10  });
+        mc.Push({ MotionType::G0, .y=10  });
 
 
+        // ** SUPER LOOP **
         while (true) {
             mc.Update();
             sleep_ms(10);

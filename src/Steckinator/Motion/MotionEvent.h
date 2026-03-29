@@ -19,8 +19,8 @@ namespace Steckinator {
 
     enum class MotionType {
         INVALID = 0,
-        G0,                     // Rapid movement       [x, y, z, a]
-        G1,                     //                      [x, y, z, a, f]
+        G0,                     // Rapid positioning    [x, y, z, a]
+        G1,                     // Linear Interpolation [x, y, z, a, f]
         G28,                    // Home all axes
         M10,                    // Enable gripper
         M11                     // Disable gripper
@@ -31,11 +31,11 @@ namespace Steckinator {
 
         MotionType type = MotionType::INVALID;
 
-        float x = 0;
-        float y = 0;
-        float z = 0;
-        float a = 0;
-        float f = 0;    // GCODE_FEEDRATE
+
+        std::optional<float> x = std::nullopt;
+        std::optional<float> y = std::nullopt;
+
+        // TODO (flex): Implement other axis
 
     };
 
@@ -59,13 +59,10 @@ namespace Steckinator {
             return front;
         }
 
-     
-
-        bool Empty() const { return m_motionQueue.empty(); }
-        size_t Size() const { return m_motionQueue.size(); }
-        void Clear() { m_motionQueue.clear(); }
-
     private:
+
+        // ** Members **
+        
         std::deque<MotionEvent> m_motionQueue;
     };
 

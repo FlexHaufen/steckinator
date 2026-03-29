@@ -18,6 +18,16 @@
 
 #if LOG_ENABLE
 
+    /**
+     * @brief Wait for serial connection
+     * 
+     * Setting this in the code during startup
+     * will block the program there and wait until
+     * the host is connected over serial to the Pi
+     * 
+     * @note use this for serial debugging
+     * 
+     */
     #define LOG_WAIT_FOR_USB    { while (!stdio_usb_connected()) sleep_ms(10); }
 
     #define LOG_DEBUG(fmt, ...)     printf("[DEBUG  ] " fmt "\n", ##__VA_ARGS__)

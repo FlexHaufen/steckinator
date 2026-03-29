@@ -33,8 +33,6 @@ namespace Steckinator {
 
         // ** Members **
         Led m_led_power;
-        Led m_led_status;
-        Led m_led_error;
 
     };
 

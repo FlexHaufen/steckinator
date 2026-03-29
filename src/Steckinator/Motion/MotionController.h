@@ -25,26 +25,27 @@
 // *** NAMESPACE ***
 namespace Steckinator {
     
-     
-    struct MotionControllerConfig {
-        float stepsPerMm    = 80.0f;   ///< Applies to all axes
-        float rapidSpeedMmS = 100.0f;  ///< G0 speed
-        float feedSpeedMmS  = 30.0f;   ///< G1 default (overridden by MotionEvent::f)
-        float homeSpeedMmS  = 15.0f;   ///< Homing approach speed
-        float homeBackoffMm = 3.0f;    ///< Back-off after endstop triggers
-    };
-
     class MotionController {
     public:
   
         void Init();
     
-        /// Call this as fast as possible from the main loop. Non-blocking.
+        /**
+         * @brief Update MotorController
+         * 
+         * This needs to be called as fast as
+         * possible in the super loop
+         * 
+         * @note This function is non-blocking
+         * 
+         */
         void Update();
-    
-        bool  IsIdle()      const { return m_state == State::IDLE; }
-        bool  IsExecuting() const { return m_state != State::IDLE; }
-
+ 
+        /**
+         * @brief Push a new motion event to the queue
+         * 
+         * @param event the event to be pushed
+         */
         void Push(const MotionEvent& event) {m_queue.Push(event); };
     
     private:
@@ -56,24 +57,25 @@ namespace Steckinator {
     
         void ExecuteMove(const MotionEvent& ev);
 
-        Steps ToSteps(float mm) const {
-            return static_cast<Steps>(std::roundf(mm * STEPS_PER_MM_XY));
-        }
+        Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * STEPS_PER_MM_XY)); }
     
-        MotionQueue    m_queue;
-        StepperMotor   m_motorA;
-        StepperMotor   m_motorB;
+    private:
+
+        // ** Members **
+
+        MotionQueue    m_queue;             // underlying queue
+        State m_state = State::IDLE;        // state of the motion controller
+
+        StepperMotor   m_motorA;            // Motor A
+        StepperMotor   m_motorB;            // Motor B
     
         Switch         m_swX;
         Switch         m_swY;
     
-    
-        State m_state = State::IDLE;
-    
         float m_posX = 0.0f;
         float m_posY = 0.0f;
-        float m_posZ = 0.0f;
-        float m_posE = 0.0f;
+        //float m_posZ = 0.0f;
+        //float m_posE = 0.0f;
     };
 
 }

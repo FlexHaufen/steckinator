@@ -25,8 +25,6 @@ namespace Steckinator {
 
         m_swX.Init(GPIO_SW_0);
         m_swY.Init(GPIO_SW_1);
-
-        LOG_DEBUG("init");
     }
 
 
@@ -46,10 +44,9 @@ namespace Steckinator {
             }
 
             case State::EXECUTING:
-                // wait until are motors are idle again
+                // wait until the fat ass motors are idle again
                 if (AllIdle()) {
                     m_state = State::IDLE;
-                    //LOG_INFO("Idle");
                 }
                 break;
 
@@ -62,7 +59,7 @@ namespace Steckinator {
 
         switch (e.type) {
             case MotionType::G0:
-                StartMove(e, 200);
+                StartMove(e, 200);      // TODO (flex): Change this to actual feed rate
                 break;
             
             case MotionType::G28:
@@ -74,8 +71,8 @@ namespace Steckinator {
     }
 
     void MotionController::StartMove(const MotionEvent& ev, float speedMmS) {
-        float dX = ev.x - m_posX;
-        float dY = ev.y - m_posY;
+        float dX = ev.x.value_or(m_posX) - m_posX;
+        float dY = ev.y.value_or(m_posY) - m_posY;
 
         // CoreXY: A = ΔX + ΔY,  B = ΔX - ΔY
         Steps stepsA = ToSteps(dY + dX);
@@ -85,15 +82,17 @@ namespace Steckinator {
         m_motorA.SetSpeed(speedSteps);
         m_motorB.SetSpeed(speedSteps);
 
-        if (stepsA != 0) m_motorA.MoveRelative(stepsA);
-        if (stepsB != 0) m_motorB.MoveRelative(stepsB);
+        if (stepsA != 0) { m_motorA.MoveRelative(stepsA); }
+        if (stepsB != 0) { m_motorB.MoveRelative(stepsB); }
 
-        m_posX = ev.x;
-        m_posY = ev.y;
-
+        if (ev.x.has_value()) { m_posX = ev.x.value(); }
+        if (ev.y.has_value()) { m_posY = ev.y.value(); }
     }
 
     void MotionController::StartHome() {
+
+        // TODO (flex): These parameters need to be adjusted
+        //              Also put them into the Config.h
         m_motorA.SetSpeed(1000);
         m_motorB.SetSpeed(1000);
 
@@ -107,7 +106,6 @@ namespace Steckinator {
             m_motorB.MoveRelative(-10);
         }
 
- 
         m_motorA.SetPosition(0);
         m_motorB.SetPosition(0);
 
