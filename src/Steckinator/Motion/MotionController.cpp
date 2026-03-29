@@ -59,7 +59,7 @@ namespace Steckinator {
 
         switch (e.type) {
             case MotionType::G0:
-                StartMove(e, 200);      // TODO (flex): Change this to actual feed rate
+                StartMove(e, 50);         // TODO (flex): Change this to actual feed rate
                 break;
             
             case MotionType::G28:
