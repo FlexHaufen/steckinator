@@ -29,7 +29,7 @@ namespace Steckinator {
     public:
   
         void Init();
-    
+
         /**
          * @brief Update MotorController
          * 
@@ -51,13 +51,13 @@ namespace Steckinator {
     private:
         enum class State { IDLE, EXECUTING, HOMING, HOMING_BACKOFF };
     
-        void StartMove(const MotionEvent& ev, float speedMmS);
+        void StartLinearMove(const MotionEvent& e);
         void StartHome();
         bool AllIdle();
     
         void ExecuteMove(const MotionEvent& ev);
 
-        Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * STEPS_PER_MM_XY)); }
+        Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * MOTION_CONTROLLER_STEPS_PER_MM_XY)); }
     
     private:
 

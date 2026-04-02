@@ -47,10 +47,10 @@ namespace Steckinator {
         mc.Init();
 
         mc.Push({ MotionType::G28 });           // Homing
-        mc.Push({ MotionType::G0, .x=400 });
-        mc.Push({ MotionType::G0, .y=400 });
-        mc.Push({ MotionType::G0, .x=10  });
-        mc.Push({ MotionType::G0, .y=10  });
+        mc.Push({ MotionType::G1, .x=400, .f=50 });
+        mc.Push({ MotionType::G1, .y=400, .f=50 });
+        mc.Push({ MotionType::G1, .x=10,  .f=50 });
+        mc.Push({ MotionType::G1, .y=10,  .f=50 });
 
 
         // ** SUPER LOOP **

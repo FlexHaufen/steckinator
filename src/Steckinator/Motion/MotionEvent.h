@@ -34,8 +34,10 @@ namespace Steckinator {
 
         std::optional<float> x = std::nullopt;
         std::optional<float> y = std::nullopt;
+        std::optional<float> z = std::nullopt;
+        std::optional<float> a = std::nullopt;
 
-        // TODO (flex): Implement other axis
+        std::optional<float> f = std::nullopt;
 
     };
 

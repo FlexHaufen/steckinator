@@ -58,10 +58,13 @@ namespace Steckinator {
     void MotionController::ExecuteMove(const MotionEvent& e) {
 
         switch (e.type) {
-            case MotionType::G0:
-                StartMove(e, 50);         // TODO (flex): Change this to actual feed rate
+            case MotionType::G0:        // intended fallthrough
+            case MotionType::G1:
+                StartLinearMove(e);
                 break;
             
+
+
             case MotionType::G28:
                 StartHome();
                 break;
@@ -70,23 +73,25 @@ namespace Steckinator {
         }
     }
 
-    void MotionController::StartMove(const MotionEvent& ev, float speedMmS) {
-        float dX = ev.x.value_or(m_posX) - m_posX;
-        float dY = ev.y.value_or(m_posY) - m_posY;
+    void MotionController::StartLinearMove(const MotionEvent& e) {
 
+        float dX = e.x.value_or(m_posX) - m_posX;
+        float dY = e.y.value_or(m_posY) - m_posY;
+        
         // CoreXY: A = ΔX + ΔY,  B = ΔX - ΔY
         Steps stepsA = ToSteps(dY + dX);
         Steps stepsB = ToSteps(dY - dX);
-
-        float speedSteps = speedMmS * STEPS_PER_MM_XY;
-        m_motorA.SetSpeed(speedSteps);
-        m_motorB.SetSpeed(speedSteps);
+        
+        // calculate the speed for the stepper motors
+        float steps_per_second = MOTION_CONTROLLER_STEPS_PER_MM_XY * e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1); 
+        m_motorA.SetSpeed(steps_per_second);
+        m_motorB.SetSpeed(steps_per_second);
 
         if (stepsA != 0) { m_motorA.MoveRelative(stepsA); }
         if (stepsB != 0) { m_motorB.MoveRelative(stepsB); }
 
-        if (ev.x.has_value()) { m_posX = ev.x.value(); }
-        if (ev.y.has_value()) { m_posY = ev.y.value(); }
+        if (e.x.has_value()) { m_posX = e.x.value(); }
+        if (e.y.has_value()) { m_posY = e.y.value(); }
     }
 
     void MotionController::StartHome() {
