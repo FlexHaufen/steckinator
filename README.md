@@ -27,3 +27,8 @@ by a Raspberry Pi Pico
     - Release the `BOOTSEL` button
 4. Press `Run Project (USB)`
 
+---
+
+## 📝 Documentation
+
+- [Raspberry Pi Pico Hardware API](https://www.raspberrypi.com/documentation/pico-sdk/hardware.html)
