@@ -19,8 +19,8 @@ namespace Steckinator {
 
     enum class MotionType {
         INVALID = 0,
-        G0,                     // Rapid movement       [x, y, z, a]
-        G1,                     //                      [x, y, z, a, f]
+        G0,                     // Rapid positioning    [x, y, z, a]
+        G1,                     // Linear Interpolation [x, y, z, a, f]
         G28,                    // Home all axes
         M10,                    // Enable gripper
         M11                     // Disable gripper
@@ -31,28 +31,41 @@ namespace Steckinator {
 
         MotionType type = MotionType::INVALID;
 
-        float x = 0;
-        float y = 0;
-        float z = 0;
-        float a = 0;
-        float f = 0;    // GCODE_FEEDRATE
+
+        std::optional<float> x = std::nullopt;
+        std::optional<float> y = std::nullopt;
+        std::optional<float> z = std::nullopt;
+        std::optional<float> a = std::nullopt;
+
+        std::optional<float> f = std::nullopt;
 
     };
 
     class MotionQueue {
     public:
-        MotionQueue()  {}
+        MotionQueue() = default;
 
+        // Push a new motion command
+        void Push(MotionEvent event) {
+            m_motionQueue.push_back(event);
+        }
 
-        void Push(const MotionEvent& motionEvent) { m_motionQueue.emplace_back(); }
-        //std::optional<MotionEvent> Pop() { return m_motionQueue.front(); }
+        // Non-blocking pop - returns the next command if available
+        std::optional<MotionEvent> Pop() {
+            if (m_motionQueue.empty()) {
+                return std::nullopt;
+            }
+
+            MotionEvent front = std::move(m_motionQueue.front());
+            m_motionQueue.pop_front();
+            return front;
+        }
 
     private:
 
         // ** Members **
+        
         std::deque<MotionEvent> m_motionQueue;
-
-
     };
 
 }

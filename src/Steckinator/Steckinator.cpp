@@ -15,11 +15,8 @@
 #include "Config.h"
 #include "Log/Log.h"
 
-#include "Steckinator/GCodeParser/GCodeParser.h"
-
-#include "Steckinator/Driver/Stepper/StepperMotor.h"
-#include "Steckinator/Driver/VacuumPump/VacuumPump.h"
-#include "Steckinator/Driver/Servo/Servo.h"
+#include "GCodeParser/GCodeParser.h"
+#include "Motion/MotionController.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -28,45 +25,38 @@ namespace Steckinator {
 
     Steckinator::Steckinator() {
         stdio_init_all();
+        //LOG_WAIT_FOR_USB;
+        LOG_INFO("Setup");
 
         m_led_power.Init(GPIO_DEBUG_LED);
-        m_led_status.Init(GPIO_LED_0);
-        m_led_error.Init(GPIO_LED_1);
-
         m_led_power.On();
-        //m_led_status.On();
-        //m_led_error.On();
-
     }
 
     void Steckinator::Run() {
-
         //! Just some debug code to see if the motors are working
-        
-        //StepperMotor motor0(pio0, 0, GPIO_M0_STEP, GPIO_M0_DIR, 10.f);
-        //StepperMotor motor1(pio0, 1, GPIO_M1_STEP, GPIO_M1_DIR, 10.f);
 
-        //motor0.move(100);
-        //motor1.move(-100);
+        // TODO (flex): Move this shit to the StepperMotor driver
+        // currently this is used for enabling the drivers
+        // as the enable pin is common
+        gpio_init(GPIO_M_EN);
+        gpio_set_dir(GPIO_M_EN, GPIO_OUT);
+        gpio_put(GPIO_M_EN, false);
 
+   
+        MotionController mc;
+        mc.Init();
 
-        //VacuumPump vacuumPump;
-        //vacuumPump.Init(GPIO_M0_DC_OUT1, GPIO_M0_DC_OUT2);
-        //vacuumPump.On();
-
-        Servo servo0;
-        servo0.Init(GPIO_SERVO0_PWM);
-        servo0.SetAngle(180);
-
-        Servo servo1;
-        servo1.Init(GPIO_SERVO1_PWM);
-        servo1.SetAngle(180);
+        mc.Push({ MotionType::G28 });           // Homing
+        mc.Push({ MotionType::G1, .x=400, .f=50 });
+        mc.Push({ MotionType::G1, .y=400, .f=50 });
+        mc.Push({ MotionType::G1, .x=10,  .f=50 });
+        mc.Push({ MotionType::G1, .y=10,  .f=50 });
 
 
+        // ** SUPER LOOP **
         while (true) {
-
-
-            sleep_ms(1);
+            mc.Update();
+            sleep_ms(10);
         }
 
 

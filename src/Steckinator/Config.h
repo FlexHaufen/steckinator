@@ -11,6 +11,15 @@
 
 // *** DEFINES ***
 
+// --------------------------------------------------
+// MOTION CONTROLLER
+// --------------------------------------------------
+#define MOTION_CONTROLLER_STEPS_PER_MM_XY               40                      // [steps/mm]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1          50          // [mm/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28         10          // [mm/s]
+
+
+
 
 // --------------------------------------------------
 // GPIOs
