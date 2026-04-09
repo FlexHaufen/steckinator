@@ -79,7 +79,7 @@ namespace Steckinator {
         float pioCyclesPerStep = 22.0f;
         float requiredPioFreq = stepsPerSecond * pioCyclesPerStep;
 
-        float clkdiv = 125000000.0f / requiredPioFreq;   // RP2040 runs at 125 MHz
+        float clkdiv = SYS_CLK_HZ / requiredPioFreq;   // RP2040 runs at 125 MHz
 
         // Clamp divider (valid range is roughly 1.0 to 65535)
         if (clkdiv < 1.0f) clkdiv = 1.0f;
