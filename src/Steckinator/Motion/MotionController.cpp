@@ -68,6 +68,8 @@ namespace Steckinator {
             case MotionType::G28:
                 StartHome();
                 break;
+
+            case MotionType::INVALID:   // intended fallthrough
             default:
                 break;
         }

@@ -47,6 +47,8 @@ namespace Steckinator {
 
         // Push a new motion command
         void Push(MotionEvent event) {
+
+            // TODO (flex): Invalid event types must not be pushed!
             m_motionQueue.push_back(event);
         }
 
