@@ -24,16 +24,16 @@ namespace Steckinator {
      */
     class Uart {
     public:
-        Uart(uart_inst_t *uart, uint txPin, uint rxPin, uint baudrate);
+        Uart(uart_inst_t* uart, uint txPin, uint rxPin, uint baudrate);
 
         void begin();
-        void writeLine(const std::string &s);
+        void writeLine(const std::string& s);
         int available();
         std::string readLine();
         void flush();
 
     private:
-        uart_inst_t *m_uart;
+        uart_inst_t* m_uart;
         uint m_pinTx;
         uint m_pinRx;
         uint m_baudrate;

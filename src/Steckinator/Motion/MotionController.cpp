@@ -31,8 +31,7 @@ namespace Steckinator {
     void MotionController::Update() {
         switch (m_state) {
 
-            case State::IDLE:
-            {
+            case State::IDLE: {
                 auto e = m_queue.Pop();
                 if (!e) {
                     break;
@@ -45,7 +44,7 @@ namespace Steckinator {
 
             case State::EXECUTING:
                 // wait until the fat ass motors are idle again
-                if (AllIdle()) {
+                if (AreMotorsIdle()) {
                     m_state = State::IDLE;
                 }
                 break;
@@ -118,7 +117,7 @@ namespace Steckinator {
 
     }
 
-    bool MotionController::AllIdle() {
+    bool MotionController::AreMotorsIdle() {
         return (!m_motorA.IsBusy() && !m_motorB.IsBusy());
     }
 

@@ -49,13 +49,26 @@ namespace Steckinator {
         void Push(const MotionEvent& event) {m_queue.Push(event); };
     
     private:
-        enum class State { IDLE, EXECUTING, HOMING, HOMING_BACKOFF };
     
         void StartLinearMove(const MotionEvent& e);
         void StartHome();
-        bool AllIdle();
+
+        /**
+         * @brief Checks if all motors are idle
+         * 
+         * Idle means the motor is currently not 
+         * executing a move.
+         * 
+         * @return true: motors are idle, else false
+         */
+        bool AreMotorsIdle();
     
-        void ExecuteMove(const MotionEvent& ev);
+        /**
+         * @brief Execute a move
+         * 
+         * @param e     The MotionEvent to be executed
+         */
+        void ExecuteMove(const MotionEvent& e);
 
         Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * MOTION_CONTROLLER_STEPS_PER_MM_XY)); }
     
@@ -64,7 +77,13 @@ namespace Steckinator {
         // ** Members **
 
         MotionQueue    m_queue;             // underlying queue
-        State m_state = State::IDLE;        // state of the motion controller
+
+        enum class State {
+            IDLE,
+            EXECUTING,
+            HOMING,
+            HOMING_BACKOFF
+        } m_state = State::IDLE;            // state of the motion controller
 
         StepperMotor   m_motorA;            // Motor A
         StepperMotor   m_motorB;            // Motor B
