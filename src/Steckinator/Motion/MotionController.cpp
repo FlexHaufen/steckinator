@@ -18,6 +18,9 @@ namespace Steckinator {
 
 
     void MotionController::Init() {
+
+        m_led_status.Init(GPIO_LED_1);
+
         m_state      = State::IDLE;
 
         m_motorA.Init(pio0, 0, GPIO_M0_STEP, GPIO_M0_DIR);
@@ -37,6 +40,7 @@ namespace Steckinator {
                     break;
                 }
 
+                m_led_status.On();
                 ExecuteMove(e.value());                
                 m_state = State::EXECUTING;
                 break;
@@ -46,6 +50,7 @@ namespace Steckinator {
                 // wait until the fat ass motors are idle again
                 if (AreMotorsIdle()) {
                     m_state = State::IDLE;
+                    m_led_status.Off();
                 }
                 break;
 
@@ -97,10 +102,13 @@ namespace Steckinator {
 
     void MotionController::StartHome() {
 
+        // TODO (flex): The homing should also be done by using 
+        //              start linear move and checking the switches
+
         // TODO (flex): These parameters need to be adjusted
         //              Also put them into the Config.h
-        m_motorA.SetSpeed(1000);
-        m_motorB.SetSpeed(1000);
+        m_motorA.SetSpeed(500);
+        m_motorB.SetSpeed(500);
 
         while (!m_swY.Get()) {
             m_motorA.MoveRelative(-10);

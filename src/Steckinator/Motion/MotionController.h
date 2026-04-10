@@ -91,6 +91,8 @@ namespace Steckinator {
         Switch         m_swX;
         Switch         m_swY;
     
+        Led m_led_status;
+
         float m_posX = 0.0f;
         float m_posY = 0.0f;
         //float m_posZ = 0.0f;

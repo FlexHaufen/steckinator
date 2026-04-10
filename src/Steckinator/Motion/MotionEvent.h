@@ -47,7 +47,6 @@ namespace Steckinator {
 
         // Push a new motion command
         void Push(MotionEvent event) {
-
             // TODO (flex): Invalid event types must not be pushed!
             m_motionQueue.push_back(event);
         }
@@ -69,5 +68,30 @@ namespace Steckinator {
         
         std::deque<MotionEvent> m_motionQueue;
     };
+
+    /*
+
+    Use the below queue for core safety
+    implement with the same architecture as above
+    but use a underlying queue_t 
+
+    class MotionQueue {
+    public:
+        MotionQueue() {
+            queue_init(&m_queue, sizeof(MotionEvent), 32); // capacity = 32
+        }
+
+        void Push(const MotionEvent& event) {
+            queue_add_blocking(&m_queue, &event);
+        }
+
+        bool Pop(MotionEvent& out) {
+            return queue_try_remove(&m_queue, &out);
+        }
+
+    private:
+        queue_t m_queue;
+    };
+    */
 
 }
