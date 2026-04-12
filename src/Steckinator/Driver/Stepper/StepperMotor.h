@@ -42,6 +42,8 @@ namespace Steckinator {
 
         void MoveRelative(Steps deltaSteps);
         
+        void Stop();
+
         bool IsBusy();
 
         int32_t GetPosition() const { return m_currentSteps; }

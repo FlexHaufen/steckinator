@@ -21,7 +21,7 @@ namespace Steckinator {
 
         m_led_status.Init(GPIO_LED_1);
 
-        m_state      = State::IDLE;
+        m_state = State::IDLE;
 
         m_motorA.Init(pio0, 0, GPIO_M0_STEP, GPIO_M0_DIR);
         m_motorB.Init(pio0, 1, GPIO_M1_STEP, GPIO_M1_DIR);
@@ -41,14 +41,74 @@ namespace Steckinator {
                 }
 
                 m_led_status.On();
-                ExecuteMove(e.value());                
-                m_state = State::EXECUTING;
+                ExecuteCommand(e.value());                
                 break;
             }
 
-            case State::EXECUTING:
+            case State::EXECUTING_MOVE:
                 // wait until the fat ass motors are idle again
                 if (AreMotorsIdle()) {
+                    m_state = State::IDLE;
+                    m_led_status.Off();
+                }
+                break;
+
+
+            case State::EXECUTING_HOMING:
+                ExecuteCommand_Homing();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    void MotionController::ExecuteCommand(const MotionEvent& e) {
+
+        switch (e.command) {
+            case MotionCommand::G0:        // intended fallthrough
+            case MotionCommand::G1:
+                StartLinearMove(e);
+                m_state = State::EXECUTING_MOVE;
+                break;
+            
+            case MotionCommand::G28:
+                StartHoming();
+                m_state = State::EXECUTING_HOMING;
+                break;
+
+            case MotionCommand::INVALID:   // intended fallthrough
+            default:
+                break;
+        }
+    }
+
+    void MotionController::ExecuteCommand_Homing() {
+        switch (m_homingPhase) {
+            case HomingPhase::PHASE_Y:
+                if (m_swY.Get()) {
+                    m_motorA.Stop();
+                    m_motorB.Stop();
+                    m_homingPhase = HomingPhase::PHASE_X;
+
+                    // Kick off X-axis homing
+                    m_motorA.MoveRelative(-ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE));
+                    m_motorB.MoveRelative(-ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE));
+                }
+                break;
+
+            case HomingPhase::PHASE_X:
+                if (m_swX.Get()) {
+                    m_motorA.Stop();
+                    m_motorB.Stop();
+
+                    m_motorA.SetPosition(0);
+                    m_motorB.SetPosition(0);
+
+                    m_posX = 0.0f;
+                    m_posY = 0.0f;
+
+                    m_homingPhase = HomingPhase::PHASE_DONE;
                     m_state = State::IDLE;
                     m_led_status.Off();
                 }
@@ -57,27 +117,9 @@ namespace Steckinator {
             default:
                 break;
         }
+        return;
     }
 
-    void MotionController::ExecuteMove(const MotionEvent& e) {
-
-        switch (e.type) {
-            case MotionType::G0:        // intended fallthrough
-            case MotionType::G1:
-                StartLinearMove(e);
-                break;
-            
-
-
-            case MotionType::G28:
-                StartHome();
-                break;
-
-            case MotionType::INVALID:   // intended fallthrough
-            default:
-                break;
-        }
-    }
 
     void MotionController::StartLinearMove(const MotionEvent& e) {
 
@@ -98,31 +140,19 @@ namespace Steckinator {
 
         if (e.x.has_value()) { m_posX = e.x.value(); }
         if (e.y.has_value()) { m_posY = e.y.value(); }
+
+        return;
     }
 
-    void MotionController::StartHome() {
+    void MotionController::StartHoming() {
+        m_homingPhase = HomingPhase::PHASE_Y;
+        m_motorA.SetSpeed(MOTION_CONTROLLER_STEPS_PER_MM_XY * MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28);
+        m_motorB.SetSpeed(MOTION_CONTROLLER_STEPS_PER_MM_XY * MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28);
 
-        // TODO (flex): The homing should also be done by using 
-        //              start linear move and checking the switches
-
-        // TODO (flex): These parameters need to be adjusted
-        //              Also put them into the Config.h
-        m_motorA.SetSpeed(500);
-        m_motorB.SetSpeed(500);
-
-        while (!m_swY.Get()) {
-            m_motorA.MoveRelative(-10);
-            m_motorB.MoveRelative( 10);
-        }
-        
-        while (!m_swX.Get()) {
-            m_motorA.MoveRelative(-10);
-            m_motorB.MoveRelative(-10);
-        }
-
-        m_motorA.SetPosition(0);
-        m_motorB.SetPosition(0);
-
+        // Kick off Y-axis homing move (large step count, motors will be stopped when switch triggers)
+        m_motorA.MoveRelative(-ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE));
+        m_motorB.MoveRelative( ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE));
+        return;
     }
 
     bool MotionController::AreMotorsIdle() {

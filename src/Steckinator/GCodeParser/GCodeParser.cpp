@@ -24,7 +24,7 @@ namespace Steckinator {
     MotionEvent GCodeParser::ParseLine(const std::string& line) {
 
         MotionEvent event{};
-        event.type = MotionType::INVALID;
+        event.command = MotionCommand::INVALID;
 
         // We create a pointer to the string here
         // in order to parse each character separately
@@ -40,9 +40,9 @@ namespace Steckinator {
                     {
                         uint8_t g = std::atoi(p_line + 1);
                         switch (g) {
-                            case  0: event.type == MotionType::G0; break;
-                            case  1: event.type == MotionType::G1; break;
-                            case 28: event.type == MotionType::G28; break;
+                            case  0: event.command == MotionCommand::G0; break;
+                            case  1: event.command == MotionCommand::G1; break;
+                            case 28: event.command == MotionCommand::G28; break;
                             
                             default: 
                                 LOG_ERROR("Received invalid G__");
@@ -55,8 +55,8 @@ namespace Steckinator {
                     {
                         uint8_t m = std::atoi(p_line + 1);
                         switch (m) {
-                            case 10: event.type == MotionType::M10; break;
-                            case 11: event.type == MotionType::M11; break;
+                            case 10: event.command == MotionCommand::M10; break;
+                            case 11: event.command == MotionCommand::M11; break;
                             
                             default: 
                                 LOG_ERROR("Received invalid M__");

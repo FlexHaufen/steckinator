@@ -23,7 +23,7 @@ namespace Steckinator {
         /**
          * @brief Creates a MotionEvent from a string
          * 
-         * The type will be `INVALID` if no corresponding command is found
+         * The command will be `INVALID` if no corresponding command is found
          * The axis parameters will be `std::nullopt` if no corresponding parameter is found
          * 
          * 

@@ -65,6 +65,28 @@ namespace Steckinator {
         m_currentSteps += deltaSteps;
     }
 
+    void StepperMotor::Stop() {
+        // Halt the state machine immediately
+        pio_sm_set_enabled(m_pio, m_stateMachineIndex, false);
+
+        // Drain TX FIFO (discard the pending step count)
+        pio_sm_drain_tx_fifo(m_pio, m_stateMachineIndex);
+
+        // Drain RX FIFO (discard any stale tokens)
+        while (!pio_sm_is_rx_fifo_empty(m_pio, m_stateMachineIndex)) {
+            pio_sm_get(m_pio, m_stateMachineIndex);
+        }
+
+        // Inject a completion token so IsBusy() returns false
+        pio_sm_exec(m_pio, m_stateMachineIndex, pio_encode_push(false, false));
+
+        // Jump back to program start so the SM is ready for the next move
+        pio_sm_exec(m_pio, m_stateMachineIndex, pio_encode_jmp(m_program_offset));
+
+        // Re-enable
+        pio_sm_set_enabled(m_pio, m_stateMachineIndex, true);
+    }
+
 
     bool StepperMotor::IsBusy() {
         return (pio_sm_is_rx_fifo_empty(m_pio, m_stateMachineIndex));

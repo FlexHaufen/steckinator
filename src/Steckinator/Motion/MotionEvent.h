@@ -17,7 +17,7 @@
 namespace Steckinator {
 
 
-    enum class MotionType {
+    enum class MotionCommand {
         INVALID = 0,
         G0,                     // Rapid positioning    [x, y, z, a]
         G1,                     // Linear Interpolation [x, y, z, a, f]
@@ -29,8 +29,7 @@ namespace Steckinator {
 
     struct MotionEvent {
 
-        MotionType type = MotionType::INVALID;
-
+        MotionCommand command = MotionCommand::INVALID;
 
         std::optional<float> x = std::nullopt;
         std::optional<float> y = std::nullopt;

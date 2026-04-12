@@ -46,11 +46,11 @@ namespace Steckinator {
         MotionController mc;
         mc.Init();
 
-        mc.Push({ MotionType::G28 });           // Homing
-        mc.Push({ MotionType::G1, .x=100, .f=15 });
-        mc.Push({ MotionType::G1, .y=100, .f=15 });
-        //mc.Push({ MotionType::G1, .x=10,  .f=15 });
-        //mc.Push({ MotionType::G1, .y=10,  .f=15 });
+        mc.Push({ MotionCommand::G28 });           // Homing
+        mc.Push({ MotionCommand::G1, .x=100, .f=50 });
+        mc.Push({ MotionCommand::G1, .y=100, .f=50 });
+        //mc.Push({ MotionCommand::G1, .x=10,  .f=15 });
+        //mc.Push({ MotionCommand::G1, .y=10,  .f=15 });
         
         // ** SUPER LOOP **
         while (true) {

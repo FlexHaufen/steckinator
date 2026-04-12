@@ -51,7 +51,7 @@ namespace Steckinator {
     private:
     
         void StartLinearMove(const MotionEvent& e);
-        void StartHome();
+        void StartHoming();
 
         /**
          * @brief Checks if all motors are idle
@@ -68,8 +68,15 @@ namespace Steckinator {
          * 
          * @param e     The MotionEvent to be executed
          */
-        void ExecuteMove(const MotionEvent& e);
+        void ExecuteCommand(const MotionEvent& e);
 
+        /**
+         * @brief Execute the homing command
+         * 
+         */
+        void ExecuteCommand_Homing();
+
+        
         Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * MOTION_CONTROLLER_STEPS_PER_MM_XY)); }
     
     private:
@@ -80,10 +87,17 @@ namespace Steckinator {
 
         enum class State {
             IDLE,
-            EXECUTING,
-            HOMING,
-            HOMING_BACKOFF
+            EXECUTING_MOVE,
+            EXECUTING_HOMING
         } m_state = State::IDLE;            // state of the motion controller
+
+
+        enum class HomingPhase {
+            PHASE_Y,                        // moving toward Y endstop
+            PHASE_X,                        // moving toward X endstop  
+            PHASE_DONE
+        } m_homingPhase = HomingPhase::PHASE_Y;
+
 
         StepperMotor   m_motorA;            // Motor A
         StepperMotor   m_motorB;            // Motor B
