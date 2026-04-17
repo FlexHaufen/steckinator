@@ -30,7 +30,7 @@ namespace Steckinator {
          * @param line              The string command e.g `"G01 X10 Y10 F10"`
          * @return MotionEvent      The resulting MotionEvent
          */
-        MotionEvent ParseLine(const std::string& line);
+        static MotionEvent ParseLine(const std::string& line);
 
     };
 

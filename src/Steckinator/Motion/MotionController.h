@@ -40,13 +40,6 @@ namespace Steckinator {
          * 
          */
         void Update();
- 
-        /**
-         * @brief Push a new motion event to the queue
-         * 
-         * @param event the event to be pushed
-         */
-        void Push(const MotionEvent& event) { MotionQueue::Instance().Push(event); };
     
     private:
     

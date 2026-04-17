@@ -18,6 +18,7 @@
 
 #include "GCodeParser/GCodeParser.h"
 #include "Motion/MotionController.h"
+#include "Driver/Uart/Uart.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -26,7 +27,7 @@ namespace Steckinator {
 
     Steckinator::Steckinator() {
         stdio_init_all();
-        //LOG_WAIT_FOR_USB;
+        LOG_WAIT_FOR_USB;
         LOG_INFO("Setup");
 
         m_led_power.Init(GPIO_DEBUG_LED);
@@ -36,14 +37,28 @@ namespace Steckinator {
     void Steckinator::Run() {
 
         multicore_launch_core1(Steckinator::Core1Run);
-
-        while (true) { }
+        Core0Run(); // does not return
         
     }
 
-    void Steckinator::Core1Run() {
+    void Steckinator::Core0Run() {
 
-        //! Just some debug code to see if the motors are working
+        Uart uart(uart1, GPIO_UART1_TX, GPIO_UART1_RX, 115200);
+        uart.begin();
+
+        while (true) {
+            auto c = uart.readLine();
+            MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
+
+            sleep_ms(10000);
+
+            LOG_DEBUG("ok");
+            uart.writeLine("ok");
+
+        }
+    }
+
+    void Steckinator::Core1Run() {
 
         // TODO (flex): Move this shit to the StepperMotor driver
         // currently this is used for enabling the drivers
@@ -52,22 +67,9 @@ namespace Steckinator {
         gpio_set_dir(GPIO_M_EN, GPIO_OUT);
         gpio_put(GPIO_M_EN, false);
 
-   
         MotionController mc;
         mc.Init();
-
-        mc.Push({ MotionCommand::G28 });           // Homing
-        mc.Push({ MotionCommand::G1, .x=200, .y=200, .f=80 });
-        mc.Push({ MotionCommand::G1, .x=100, .f=80 });
-        mc.Push({ MotionCommand::G1, .y=100, .f=80 });
-        mc.Push({ MotionCommand::G1, .x=200, .y=200, .f=150 });
-        mc.Push({ MotionCommand::G1, .x=100, .y=100, .f=150 });
-        mc.Push({ MotionCommand::G1, .x=200, .y=200, .f=200 });
-        mc.Push({ MotionCommand::G1, .x=100, .y=100, .f=200 });
-        //mc.Push({ MotionCommand::G1, .x=10,  .f=15 });
-        //mc.Push({ MotionCommand::G1, .y=10,  .f=15 });
         
-        // ** SUPER LOOP **
         while (true) {
             mc.Update();
             sleep_ms(10);

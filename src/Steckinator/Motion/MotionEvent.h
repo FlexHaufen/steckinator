@@ -27,7 +27,10 @@ namespace Steckinator {
         G1,                     // Linear Interpolation [x, y, z, a, f]
         G28,                    // Home all axes
         M10,                    // Enable gripper
-        M11                     // Disable gripper
+        M11,                    // Disable gripper
+    
+        M0,                     // Begin program
+        M1,                     // End program
     };
 
 
