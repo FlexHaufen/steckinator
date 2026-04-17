@@ -35,7 +35,7 @@ namespace Steckinator {
         switch (m_state) {
 
             case State::IDLE: {
-                auto e = m_queue.Pop();
+                auto e = MotionQueue::Instance().Pop();
                 if (!e) {
                     break;
                 }
@@ -105,8 +105,8 @@ namespace Steckinator {
                     m_motorA.SetPosition(0);
                     m_motorB.SetPosition(0);
 
-                    m_posX = 0.0f;
-                    m_posY = 0.0f;
+                    m_posX = 0.f;
+                    m_posY = 0.f;
 
                     m_homingPhase = HomingPhase::PHASE_DONE;
                     m_state = State::IDLE;

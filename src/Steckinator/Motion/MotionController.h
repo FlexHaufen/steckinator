@@ -46,7 +46,7 @@ namespace Steckinator {
          * 
          * @param event the event to be pushed
          */
-        void Push(const MotionEvent& event) {m_queue.Push(event); };
+        void Push(const MotionEvent& event) { MotionQueue::Instance().Push(event); };
     
     private:
     
@@ -82,8 +82,6 @@ namespace Steckinator {
     private:
 
         // ** Members **
-
-        MotionQueue    m_queue;             // underlying queue
 
         enum class State {
             IDLE,

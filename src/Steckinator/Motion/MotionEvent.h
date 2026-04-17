@@ -13,6 +13,10 @@
 #include <deque>
 #include <optional>
 
+#include <pico/util/queue.h>
+
+#include "Steckinator/Config.h"
+
 // *** NAMESPACE ***
 namespace Steckinator {
 
@@ -40,57 +44,43 @@ namespace Steckinator {
 
     };
 
+    
     class MotionQueue {
     public:
-        MotionQueue() = default;
+     
 
-        // Push a new motion command
-        void Push(MotionEvent event) {
-            // TODO (flex): Invalid event types must not be pushed!
-            m_motionQueue.push_back(event);
+        // Global access point
+        static MotionQueue& Instance() {
+            static MotionQueue instance;   // created once, thread-safe (C++11)
+            return instance;
         }
 
-        // Non-blocking pop - returns the next command if available
-        std::optional<MotionEvent> Pop() {
-            if (m_motionQueue.empty()) {
-                return std::nullopt;
+        bool Push(const MotionEvent& event) {
+            if (!queue_try_add(&m_queue, &event)) {
+                // TODO handle overflow (log, drop, etc.)
+                return false;
             }
+            return true;
+        }
 
-            MotionEvent front = std::move(m_motionQueue.front());
-            m_motionQueue.pop_front();
-            return front;
+        std::optional<MotionEvent> Pop() {
+            MotionEvent event;
+            if (queue_try_remove(&m_queue, &event)) {
+                return event;              // value present
+            }
+            return std::nullopt;           // queue empty
         }
 
     private:
 
-        // ** Members **
-        
-        std::deque<MotionEvent> m_motionQueue;
-    };
-
-    /*
-
-    Use the below queue for core safety
-    implement with the same architecture as above
-    but use a underlying queue_t 
-
-    class MotionQueue {
-    public:
         MotionQueue() {
-            queue_init(&m_queue, sizeof(MotionEvent), 32); // capacity = 32
-        }
-
-        void Push(const MotionEvent& event) {
-            queue_add_blocking(&m_queue, &event);
-        }
-
-        bool Pop(MotionEvent& out) {
-            return queue_try_remove(&m_queue, &out);
+            queue_init(&m_queue, sizeof(MotionEvent), MOTION_CONTROLLER_QUEUE_SIZE);
         }
 
     private:
+        // ** Members **
         queue_t m_queue;
     };
-    */
+    
 
 }
