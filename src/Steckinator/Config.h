@@ -15,11 +15,17 @@
 // MOTION CONTROLLER
 // --------------------------------------------------
 #define MOTION_CONTROLLER_STEPS_PER_MM_XY               40          // [steps/mm]
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1          50          // [mm/s]
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28         40          // [mm/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        100          // [mm/s]
 
-#define MOTION_CONTROLLER_HOMING_DISTANCE              500          // Number of steps until homing position is guaranteed [mm]
+#define MOTION_CONTROLLER_HOMING_DISTANCE              400          // Number of steps until homing position is guaranteed [mm]
 #define MOTION_CONTROLLER_QUEUE_SIZE                    64          // How many events can be saved in the eventqueue
+
+// --------------------------------------------------
+// STEPPER MOTOR
+// --------------------------------------------------
+#define STEPPER_MOTOR_ACCELERATION                 8000.0f          // acceleration of the stepper [mm/s^2]
+
 
 // --------------------------------------------------
 // GPIOs

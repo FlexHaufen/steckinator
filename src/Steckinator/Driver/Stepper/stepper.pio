@@ -1,14 +1,17 @@
 ; stepper.pio
-; Generates STEP pulses. CPU writes step count to TX FIFO.
-; STEP pin = pin 0 (relative), DIR pin set before pushing step count.
+; Each entry in TX FIFO = one step's half-period (in PIO clock cycles).
+; DMA feeds the FIFO continuously from a ramp table.
+; STEP = pin 0. DIR is set by CPU before starting DMA.
 
 .program stepper
-start:
-    pull block         ; Wait for step count from CPU
-    mov x, osr         ; Load count into scratch X
-loop:
-    set pins, 1 [10]   ; STEP high, hold ~10 cycles
-    set pins, 0 [10]   ; STEP low,  hold ~10 cycles
-    jmp x-- loop       ; Decrement X, loop if not zero
-    push noblock       ; Signal completion → RX FIFO
-    jmp start          ; Loop back manually (no .wrap)
+.wrap_target
+    pull block          ; Wait for delay value from DMA
+    mov x, osr          ; X = half-period count
+high:
+    set pins, 1         ; STEP high
+    jmp x-- high        ; Hold for X cycles
+    mov x, osr          ; Reload X for the low phase
+low:
+    set pins, 0         ; STEP low
+    jmp x-- low         ; Hold for X cycles
+.wrap

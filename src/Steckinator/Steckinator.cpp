@@ -27,7 +27,7 @@ namespace Steckinator {
 
     Steckinator::Steckinator() {
         stdio_init_all();
-        LOG_WAIT_FOR_USB;
+        //LOG_WAIT_FOR_USB;
         LOG_INFO("Setup");
 
         m_led_power.Init(GPIO_DEBUG_LED);
@@ -42,7 +42,7 @@ namespace Steckinator {
     }
 
     void Steckinator::Core0Run() {
-
+        /*
         Uart uart(uart1, GPIO_UART1_TX, GPIO_UART1_RX, 115200);
         uart.begin();
 
@@ -56,6 +56,19 @@ namespace Steckinator {
             uart.writeLine("ok");
 
         }
+        */
+
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G28"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F800"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F800"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F800"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F800"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F800"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F800"));
+
+
+        // never leave
+        for (;;) {}
     }
 
     void Steckinator::Core1Run() {
@@ -75,5 +88,7 @@ namespace Steckinator {
             sleep_ms(10);
         }
 
+        // never leave
+        for (;;) {}
     }
 }
