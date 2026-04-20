@@ -14,7 +14,7 @@
 // --------------------------------------------------
 // MOTION CONTROLLER
 // --------------------------------------------------
-#define MOTION_CONTROLLER_STEPS_PER_MM_XY               40          // [steps/mm]
+#define MOTION_CONTROLLER_STEPS_PER_MM_XY               40          // [steps/mm]   (motor_steps_per_rev * microsteps) / mm_per_rev = (200 * 8) / 40
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        100          // [mm/s]
 
@@ -25,7 +25,6 @@
 // STEPPER MOTOR
 // --------------------------------------------------
 #define STEPPER_MOTOR_ACCELERATION                 8000.0f          // acceleration of the stepper [mm/s^2]
-
 
 // --------------------------------------------------
 // GPIOs

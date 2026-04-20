@@ -59,12 +59,12 @@ namespace Steckinator {
         */
 
         MotionQueue::Instance().Push(GCodeParser::ParseLine("G28"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F800"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F800"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F800"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F800"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F800"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F800"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F1000"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F1000"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F1000"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F1000"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F1000"));
+        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F1000"));
 
 
         // never leave

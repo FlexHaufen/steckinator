@@ -174,9 +174,8 @@ namespace Steckinator {
 
         // 6.   Acceleration phase
         for (uint32_t i = 0; i < ramp; ++i) {
-            const float t = (ramp > 1) ? static_cast<float>(i) / static_cast<float>(ramp - 1) : 1.0f;
-            const float freq = v_0 + t * (actual_cruise_freq - v_0);
-            const float period_f = 1'000'000.0f / freq;
+            const float v = std::sqrt(v_0 * v_0 + 2.0f * a * static_cast<float>(i));
+            const float period_f = 1'000'000.0f / v;
             tbl[i] = static_cast<uint32_t>(period_f + 0.5f);
         }
 
