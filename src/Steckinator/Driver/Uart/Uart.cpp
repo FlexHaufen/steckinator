@@ -9,7 +9,7 @@
  */
 
 // *** INCLUDES ***
-#include "Steckinator/Uart/Uart.h"
+#include "Steckinator/Driver/Uart/Uart.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -24,20 +24,20 @@ namespace Steckinator {
         uart_set_hw_flow(m_uart, false, false);
         uart_set_format(m_uart, 8, 1, UART_PARITY_NONE);
         uart_set_fifo_enabled(m_uart, false);
+        return;
     }
 
     void Uart::writeLine(const std::string &s) {
         uart_puts(m_uart, s.c_str());
         uart_puts(m_uart, "\r\n");
-    }
-
-    int Uart::available() {
-        return uart_is_readable(m_uart);
+        return;
     }
 
     std::string Uart::readLine() {
         std::string result;
 
+        // TODO (flex): Dangerous this could be blocking.
+        //              Maybe use callback timer in case of hangup
         while (true) {
             if (uart_is_readable(m_uart)) {
                 char c = uart_getc(m_uart);
@@ -51,10 +51,4 @@ namespace Steckinator {
         return result;
     }
 
-    void Uart::flush() {
-        // Wait until transmit buffer is empty
-        while (!uart_is_writable(m_uart))
-            tight_loop_contents();
-    }
-        
 }

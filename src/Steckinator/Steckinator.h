@@ -30,6 +30,12 @@ namespace Steckinator {
         void Run();
 
     private:
+    
+        static void Core0Run();        
+        static void Core1Run();
+
+    private:
+
 
         // ** Members **
         Led m_led_power;

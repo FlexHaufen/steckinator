@@ -13,13 +13,16 @@
 // *** INCLUDES ***
 
 #include <cmath>
+#include <functional>
 
 #include "Steckinator/Config.h"
 
 #include "Steckinator/Motion/MotionEvent.h"
+#include "Steckinator/Motion/MotionQueue.h"
 #include "Steckinator/Driver/Stepper/StepperMotor.h"
 #include "Steckinator/Driver/Switch/Switch.h"
 #include "Steckinator/Driver/Led/Led.h"
+#include "Steckinator/Driver/VacuumPump/VacuumPump.h"
 
 
 // *** NAMESPACE ***
@@ -28,6 +31,10 @@ namespace Steckinator {
     class MotionController {
     public:
   
+        /**
+         * @brief Initialize the controller
+         * 
+         */
         void Init();
 
         /**
@@ -40,22 +47,34 @@ namespace Steckinator {
          * 
          */
         void Update();
- 
-        /**
-         * @brief Push a new motion event to the queue
-         * 
-         * @param event the event to be pushed
-         */
-        void Push(const MotionEvent& event) {m_queue.Push(event); };
     
     private:
-        enum class State { IDLE, EXECUTING, HOMING, HOMING_BACKOFF };
     
         void StartLinearMove(const MotionEvent& e);
-        void StartHome();
-        bool AllIdle();
+        void StartHoming();
+
+        /**
+         * @brief Checks if all motors are idle
+         * 
+         * Idle means the motor is currently not 
+         * executing a move.
+         * 
+         * @return true: motors are idle, else false
+         */
+        bool AreMotorsIdle();
     
-        void ExecuteMove(const MotionEvent& ev);
+        /**
+         * @brief Execute a move
+         * 
+         * @param e     The MotionEvent to be executed
+         */
+        void ExecuteCommand(const MotionEvent& e);
+
+        /**
+         * @brief Execute the homing command
+         * 
+         */
+        void ExecuteCommand_Homing();
 
         Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * MOTION_CONTROLLER_STEPS_PER_MM_XY)); }
     
@@ -63,19 +82,36 @@ namespace Steckinator {
 
         // ** Members **
 
-        MotionQueue    m_queue;             // underlying queue
-        State m_state = State::IDLE;        // state of the motion controller
+        enum class State {
+            IDLE,
+            EXECUTING_MOVE,
+            EXECUTING_HOMING
+        } m_state = State::IDLE;            // state of the motion controller
+
+
+        enum class HomingPhase {
+            PHASE_Y,                        // moving toward Y endstop
+            PHASE_X,                        // moving toward X endstop  
+            PHASE_DONE
+        } m_homingPhase = HomingPhase::PHASE_Y;
+
 
         StepperMotor   m_motorA;            // Motor A
         StepperMotor   m_motorB;            // Motor B
     
         Switch         m_swX;
         Switch         m_swY;
+
+        VacuumPump     m_vacuumPump;        // Vacuum Pump
+
     
+        Led m_led_status;
+
         float m_posX = 0.0f;
         float m_posY = 0.0f;
         //float m_posZ = 0.0f;
         //float m_posE = 0.0f;
+
     };
 
 }

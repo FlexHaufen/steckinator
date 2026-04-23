@@ -12,6 +12,7 @@
 // *** INCLUDES ***
 #include <cstdint>
 #include <cstdlib>
+#include <vector>
 #include <pico/stdlib.h>
 #include <hardware/pio.h>
 #include <hardware/dma.h>
@@ -28,37 +29,88 @@ namespace Steckinator {
     class StepperMotor {
     public:
 
+        /**
+         * @brief Construct and fully initialise a stepper motor.
+         * 
+         * @param pio                       PIO block to use (pio0 or pio1).
+         * @param stateMachineIndex         State machine index (0–3). Each motor needs its own.
+         * @param programOffset             The program offset of the pio driver
+         * @param pinStep                   GPIO for STEP output
+         * @param pinDir                    GPIO for DIR output
+         * @param stepsPerMm                [steps/mm]
+         */
+        void Init(PIO pio, uint stateMachineIndex, uint programOffset, uint pinStep, uint pinDir, uint stepsPerMm);
+
+
+        enum class AccelerationMethod {
+            NONE = 0,
+            RAMP
+        };
 
         /**
-         * Construct and fully initialise a stepper motor.
-         *
-         * @param pio       PIO block to use (pio0 or pio1).
-         *                  The PIO program is loaded once per block and shared.
-         * @param stateMachineIndex         State machine index (0–3). Each motor needs its own.
-         * @param pinStep                   GPIO for STEP output.
-         * @param dirPin                    GPIO for DIR  output.
+         * @brief Move a relative amount of steps
+         * 
+         * @param steps                 The steps to move
+         * @param feedrate              The feedrate
+         * @param accelerationMethod    The acceleration profile to use
          */
-        void Init(PIO pio, uint stateMachineIndex, uint pinStep, uint pinDir);
-
-        void MoveRelative(Steps deltaSteps);
+        void MoveRelative(Steps steps, float feedrate, AccelerationMethod accelerationMethod);
         
+        /**
+         * @brief Stops the motor immediately
+         * 
+         */
+        void Stop();
+
+        /**
+         * @brief Checks if the motor is still executing the previous move
+         * 
+         * @return true motor is busy, else false
+         */
         bool IsBusy();
 
-        int32_t GetPosition() const { return m_currentSteps; }
-        void SetPosition(int32_t pos) { m_currentSteps = pos; }  // for homing
+        /**
+         * @brief Gets the offset of the stepper pio program
+         * 
+         * @param pio       The pio to use
+         * @return uint     The program offset
+         */
+        static uint GetStepperProgramOffset(PIO pio) { return pio_add_program(pio, &stepper_program);}
 
-        void SetSpeed(float stepsPerSecond);
+    private:
+
+        /**
+         * @brief Build the step table with a ramp acceleration profile 
+         * 
+         * @param total_steps   number of total steps
+         * @param feedrate      target feedrate [mm/s]
+         */
+        void BuildStepTable_Ramp(uint32_t total_steps, float feedrate);
+
+        /**
+         * @brief Build the step table with a constant profile 
+         * 
+         * @param total_steps   number of total steps
+         * @param feedrate      target feedrate [mm/s]
+         */
+        void BuildStepTable_Constant(uint32_t total_steps, float feedrate);
 
     private:
         
         // ** Members ** 
-        PIO m_pio;
-        uint m_stateMachineIndex;
-        uint m_pinStep;
-        uint m_pinDir;
-        Steps m_currentSteps = 0;
-        uint m_program_offset = 0;
+        uint m_pinStep;                 // The STEP pin of the driver
+        uint m_pinDir;                  // The DIR pin of the driver
 
+
+        PIO m_pio = nullptr;            // The underlying pio
+        uint m_stateMachineIndex = -1;  // The state machine index of the pio
+        uint m_programOffset;
+        uint m_dmaChannel = -1;         // The dma channel for the pio
+
+
+        float m_stepsPerMm = 0.f;                   // steps per millimeter – set according to your mechanics
+        const uint32_t m_initialPeriodUs = 5000;    // starting period (slow speed) in microseconds
+        std::vector<uint32_t> m_stepTable;          // The table containing the step pulses
 
     };
 }

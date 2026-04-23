@@ -10,14 +10,17 @@
 #pragma once
 
 // *** INCLUDES ***
-#include <deque>
 #include <optional>
+
 
 // *** NAMESPACE ***
 namespace Steckinator {
 
-
-    enum class MotionType {
+    /**
+     * @brief Motion commands that can be used
+     * 
+     */
+    enum class MotionCommand {
         INVALID = 0,
         G0,                     // Rapid positioning    [x, y, z, a]
         G1,                     // Linear Interpolation [x, y, z, a, f]
@@ -26,11 +29,13 @@ namespace Steckinator {
         M11                     // Disable gripper
     };
 
-
+    /**
+     * @brief Motion event
+     * 
+     */
     struct MotionEvent {
 
-        MotionType type = MotionType::INVALID;
-
+        MotionCommand command = MotionCommand::INVALID;
 
         std::optional<float> x = std::nullopt;
         std::optional<float> y = std::nullopt;
@@ -39,33 +44,6 @@ namespace Steckinator {
 
         std::optional<float> f = std::nullopt;
 
-    };
-
-    class MotionQueue {
-    public:
-        MotionQueue() = default;
-
-        // Push a new motion command
-        void Push(MotionEvent event) {
-            m_motionQueue.push_back(event);
-        }
-
-        // Non-blocking pop - returns the next command if available
-        std::optional<MotionEvent> Pop() {
-            if (m_motionQueue.empty()) {
-                return std::nullopt;
-            }
-
-            MotionEvent front = std::move(m_motionQueue.front());
-            m_motionQueue.pop_front();
-            return front;
-        }
-
-    private:
-
-        // ** Members **
-        
-        std::deque<MotionEvent> m_motionQueue;
     };
 
 }

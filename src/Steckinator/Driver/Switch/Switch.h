@@ -1,6 +1,5 @@
 /**
  * @file Switch.h
- * @author flexhaufen
  * @brief Driver for a Switch
  * @version 0.1
  * @date 2026-03-23
@@ -11,8 +10,7 @@
 #pragma once
 
 // *** INCLUDES ***
-
-#include "pico/stdlib.h"
+#include <pico/stdlib.h>
 
 
 // *** NAMESPACE ***

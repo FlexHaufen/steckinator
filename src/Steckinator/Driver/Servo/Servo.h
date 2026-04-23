@@ -10,15 +10,12 @@
 #pragma once
 
 // *** INCLUDES ***
-#include <pico/stdio.h>
+#include <pico/stdlib.h>
 #include <hardware/pwm.h>
 
 
 // *** NAMESPACE **
-
 namespace Steckinator {
-
-
 
     class Servo {
     public:
