@@ -55,8 +55,6 @@ namespace Steckinator {
                     {
                         uint8_t m = std::atoi(p_line + 1);
                         switch (m) {
-                            case 0:  event.command = MotionCommand::M0;  break;
-                            case 1:  event.command = MotionCommand::M1;  break;
                             case 10: event.command = MotionCommand::M10; break;
                             case 11: event.command = MotionCommand::M11; break;
                             
