@@ -1,6 +1,6 @@
 /**
- * @file MotionQueue.h
- * @brief Queue for storing the MotionEvents
+ * @file ResponseQueue.h
+ * @brief Queue for storing the Responses to the MainController
  * @version 0.1
  * @date 2026-04-23
  * 
@@ -11,12 +11,17 @@
 
 // *** INCLUDES ***
 #include "Steckinator/Config.h"
-#include "Steckinator/Motion/MotionEvent.h"
 #include "Steckinator/Core/TSQueue.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
 
-    using MotionQueue = TSQueue<MotionEvent, MOTION_CONTROLLER_MOTION_QUEUE_SIZE>;
+    enum class Response {
+        OK = 0,
+        ERROR = 1
+    };
+
+
+    using ResponseQueue = TSQueue<Response, COMMUNICATION_RESPONSE_QUEUE_SIZE>;
 
 }  

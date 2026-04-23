@@ -13,6 +13,7 @@
 // *** INCLUDES ***
 
 #include <cmath>
+#include <functional>
 
 #include "Steckinator/Config.h"
 
@@ -110,6 +111,7 @@ namespace Steckinator {
         float m_posY = 0.0f;
         //float m_posZ = 0.0f;
         //float m_posE = 0.0f;
+
     };
 
 }

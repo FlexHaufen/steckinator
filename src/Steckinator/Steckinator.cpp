@@ -21,6 +21,7 @@
 #include "Steckinator/Motion/MotionController.h"
 #include "Steckinator/Motion/MotionQueue.h"
 #include "Steckinator/Driver/Uart/Uart.h"
+#include "Steckinator/Communication/ResponseQueue.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -44,22 +45,23 @@ namespace Steckinator {
     }
 
     void Steckinator::Core0Run() {
-        /*
+
         Uart uart(uart1, GPIO_UART1_TX, GPIO_UART1_RX, 115200);
         uart.begin();
 
         while (true) {
-            auto c = uart.readLine();
+
+            // wait for command
+            auto c = uart.readLine();           // blocking
             MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
 
-            sleep_ms(10000);
-
-            LOG_DEBUG("ok");
-            uart.writeLine("ok");
+            // wait for execution to finish
+            auto response = ResponseQueue::Instance().PopBlocking();    // blocking
+            uart.writeLine(( response == Response::OK) ? "ok" : "error");
 
         }
-        */
 
+        /*
         MotionQueue::Instance().Push(GCodeParser::ParseLine("G28"));
         //MotionQueue::Instance().Push(GCodeParser::ParseLine("M10"));
         MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F1000"));
@@ -69,7 +71,7 @@ namespace Steckinator {
         MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F1000"));
         MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F1000"));
         MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F1000"));
-
+        */
 
         // never leave
         for (;;) {}

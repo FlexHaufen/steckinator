@@ -9,9 +9,12 @@
 
 // *** INCLUDES ***
 #include "Steckinator/Motion/MotionController.h"
+
+#include "Steckinator/Config.h"
 #include "Steckinator/Log/Log.h"
 
 #include <cmath>
+#include "Steckinator/Communication/ResponseQueue.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -54,9 +57,10 @@ namespace Steckinator {
                 if (AreMotorsIdle()) {
                     m_state = State::IDLE;
                     m_led_status.Off();
+                    ResponseQueue::Instance().Push(Response::OK);
+
                 }
                 break;
-
 
             case State::EXECUTING_HOMING:
                 ExecuteCommand_Homing();
@@ -83,12 +87,12 @@ namespace Steckinator {
 
             case MotionCommand::M10:
                 m_vacuumPump.On();
-                m_state = State::IDLE;      // this happens instant, therefore we can switch back to idle right away
+                m_state = State::EXECUTING_HOMING;     
                 break;
 
             case MotionCommand::M11:
-                m_vacuumPump.Off();         // this happens instant, therefore we can switch back to idle right away
-                m_state = State::IDLE;
+                m_vacuumPump.Off();
+                m_state = State::EXECUTING_HOMING;
                 break;
 
             case MotionCommand::INVALID:    // intended fallthrough
