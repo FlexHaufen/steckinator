@@ -13,12 +13,14 @@
 
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
-#include "Config.h"
-#include "Log/Log.h"
 
-#include "GCodeParser/GCodeParser.h"
-#include "Motion/MotionController.h"
-#include "Driver/Uart/Uart.h"
+#include "Steckinator/Config.h"
+#include "Steckinator/Log/Log.h"
+
+#include "Steckinator/GCodeParser/GCodeParser.h"
+#include "Steckinator/Motion/MotionController.h"
+#include "Steckinator/Motion/MotionQueue.h"
+#include "Steckinator/Driver/Uart/Uart.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {

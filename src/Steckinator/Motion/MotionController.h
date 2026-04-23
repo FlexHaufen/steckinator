@@ -17,6 +17,7 @@
 #include "Steckinator/Config.h"
 
 #include "Steckinator/Motion/MotionEvent.h"
+#include "Steckinator/Motion/MotionQueue.h"
 #include "Steckinator/Driver/Stepper/StepperMotor.h"
 #include "Steckinator/Driver/Switch/Switch.h"
 #include "Steckinator/Driver/Led/Led.h"
@@ -29,6 +30,10 @@ namespace Steckinator {
     class MotionController {
     public:
   
+        /**
+         * @brief Initialize the controller
+         * 
+         */
         void Init();
 
         /**
@@ -70,7 +75,6 @@ namespace Steckinator {
          */
         void ExecuteCommand_Homing();
 
-        
         Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * MOTION_CONTROLLER_STEPS_PER_MM_XY)); }
     
     private:

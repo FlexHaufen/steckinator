@@ -10,30 +10,29 @@
 #pragma once
 
 // *** INCLUDES ***
-#include <deque>
 #include <optional>
 
-#include <pico/util/queue.h>
-
-#include "Steckinator/Config.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
 
-
+    /**
+     * @brief Motion commands that can be used
+     * 
+     */
     enum class MotionCommand {
         INVALID = 0,
         G0,                     // Rapid positioning    [x, y, z, a]
         G1,                     // Linear Interpolation [x, y, z, a, f]
         G28,                    // Home all axes
         M10,                    // Enable gripper
-        M11,                    // Disable gripper
-    
-        M0,                     // Begin program
-        M1,                     // End program
+        M11                     // Disable gripper
     };
 
-
+    /**
+     * @brief Motion event
+     * 
+     */
     struct MotionEvent {
 
         MotionCommand command = MotionCommand::INVALID;
@@ -46,44 +45,5 @@ namespace Steckinator {
         std::optional<float> f = std::nullopt;
 
     };
-
-    
-    class MotionQueue {
-    public:
-     
-
-        // Global access point
-        static MotionQueue& Instance() {
-            static MotionQueue instance;   // created once, thread-safe (C++11)
-            return instance;
-        }
-
-        bool Push(const MotionEvent& event) {
-            if (!queue_try_add(&m_queue, &event)) {
-                // TODO handle overflow (log, drop, etc.)
-                return false;
-            }
-            return true;
-        }
-
-        std::optional<MotionEvent> Pop() {
-            MotionEvent event;
-            if (queue_try_remove(&m_queue, &event)) {
-                return event;              // value present
-            }
-            return std::nullopt;           // queue empty
-        }
-
-    private:
-
-        MotionQueue() {
-            queue_init(&m_queue, sizeof(MotionEvent), MOTION_CONTROLLER_QUEUE_SIZE);
-        }
-
-    private:
-        // ** Members **
-        queue_t m_queue;
-    };
-    
 
 }
