@@ -20,6 +20,7 @@
 #include "Steckinator/Driver/Stepper/StepperMotor.h"
 #include "Steckinator/Driver/Switch/Switch.h"
 #include "Steckinator/Driver/Led/Led.h"
+#include "Steckinator/Driver/VacuumPump/VacuumPump.h"
 
 
 // *** NAMESPACE ***
@@ -95,6 +96,9 @@ namespace Steckinator {
     
         Switch         m_swX;
         Switch         m_swY;
+
+        VacuumPump     m_vacuumPump;        // Vacuum Pump
+
     
         Led m_led_status;
 

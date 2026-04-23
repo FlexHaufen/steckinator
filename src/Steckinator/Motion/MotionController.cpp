@@ -20,16 +20,18 @@ namespace Steckinator {
     void MotionController::Init() {
 
         m_led_status.Init(GPIO_LED_1);
-
         m_state = State::IDLE;
 
         auto offset = StepperMotor::GetStepperProgramOffset(pio0);
-
         m_motorA.Init(pio0, 0, offset, GPIO_M0_STEP, GPIO_M0_DIR, MOTION_CONTROLLER_STEPS_PER_MM_XY);
         m_motorB.Init(pio0, 1, offset, GPIO_M1_STEP, GPIO_M1_DIR, MOTION_CONTROLLER_STEPS_PER_MM_XY);
 
         m_swX.Init(GPIO_SW_0);
         m_swY.Init(GPIO_SW_1);
+
+        m_vacuumPump.Init(GPIO_M0_DC_OUT1, GPIO_M0_DC_OUT2);
+
+        return;
     }
 
 
@@ -68,7 +70,7 @@ namespace Steckinator {
     void MotionController::ExecuteCommand(const MotionEvent& e) {
 
         switch (e.command) {
-            case MotionCommand::G0:        // intended fallthrough
+            case MotionCommand::G0:         // intended fallthrough
             case MotionCommand::G1:
                 StartLinearMove(e);
                 m_state = State::EXECUTING_MOVE;
@@ -79,7 +81,17 @@ namespace Steckinator {
                 m_state = State::EXECUTING_HOMING;
                 break;
 
-            case MotionCommand::INVALID:   // intended fallthrough
+            case MotionCommand::M10:
+                m_vacuumPump.On();
+                m_state = State::IDLE;      // this happens instant, therefore we can switch back to idle right away
+                break;
+
+            case MotionCommand::M11:
+                m_vacuumPump.Off();         // this happens instant, therefore we can switch back to idle right away
+                m_state = State::IDLE;
+                break;
+
+            case MotionCommand::INVALID:    // intended fallthrough
             default:
                 break;
         }
