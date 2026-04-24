@@ -57,7 +57,8 @@ namespace Steckinator {
                 if (AreMotorsIdle()) {
                     m_state = State::IDLE;
                     m_led_status.Off();
-                    ResponseQueue::Instance().Push(Response::OK);
+                    ResponseQueue::Instance().Push(Response::OK);           // FIXME (inj): This is currently also done in ExecuteCommand_Homing
+                                                                            //              could this be done once? and not twice?
 
                 }
                 break;
@@ -125,6 +126,7 @@ namespace Steckinator {
 
                     m_homingPhase = HomingPhase::PHASE_DONE;
                     m_state = State::IDLE;
+                    ResponseQueue::Instance().Push(Response::OK);
                     m_led_status.Off();
                 }
                 break;

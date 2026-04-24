@@ -46,32 +46,35 @@ namespace Steckinator {
 
     void Steckinator::Core0Run() {
 
-        Uart uart(uart1, GPIO_UART1_TX, GPIO_UART1_RX, 115200);
-        uart.begin();
+        #if STECKINATOR_RUN_DEBUG_PROGRAM
+            
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G28"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("M10"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F1000"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F1000"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("M11"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F1000"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F1000"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F1000"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F1000"));
+        
+        #else
+        
+            Uart uart(uart1, GPIO_UART1_TX, GPIO_UART1_RX, 115200);
+            uart.begin();
 
-        while (true) {
+            while (true) {
 
-            // wait for command
-            auto c = uart.readLine();           // blocking
-            MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
+                // wait for command
+                auto c = uart.readLine();           // blocking
+                MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
 
-            // wait for execution to finish
-            auto response = ResponseQueue::Instance().PopBlocking();    // blocking
-            uart.writeLine(( response == Response::OK) ? "ok" : "error");
+                // wait for execution to finish
+                auto response = ResponseQueue::Instance().PopBlocking();    // blocking
+                uart.writeLine(( response == Response::OK) ? "ok" : "error");
+            }
 
-        }
-
-        /*
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G28"));
-        //MotionQueue::Instance().Push(GCodeParser::ParseLine("M10"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F1000"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F1000"));
-        //MotionQueue::Instance().Push(GCodeParser::ParseLine("M11"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F1000"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F1000"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F1000"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F1000"));
-        */
+        #endif
 
         // never leave
         for (;;) {}
