@@ -47,6 +47,22 @@ namespace Steckinator {
          * 
          */
         void Update();
+
+        /**
+         * @brief Enable all motors
+         * 
+         * The enable pin is shared
+         * 
+         */
+        static void EnableMotors() { gpio_put(GPIO_M_EN, false); /* false means enable */ }
+
+        /**
+         * @brief Disable all motors
+         * 
+         * The enable pin is shared
+         * 
+         */
+        static void DisableMotors() { gpio_put(GPIO_M_EN, true); }
     
     private:
     

@@ -81,14 +81,8 @@ namespace Steckinator {
     }
 
     void Steckinator::Core1Run() {
-
-        // TODO (flex): Move this shit to the StepperMotor driver
-        // currently this is used for enabling the drivers
-        // as the enable pin is common
-        gpio_init(GPIO_M_EN);
-        gpio_set_dir(GPIO_M_EN, GPIO_OUT);
-        gpio_put(GPIO_M_EN, false);
-
+        
+        
         MotionController mc;
         mc.Init();
         
