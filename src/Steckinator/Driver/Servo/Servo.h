@@ -22,8 +22,6 @@ namespace Steckinator {
     
         void Init(uint gpio) {
             m_gpio = gpio;
-            m_min_pulse = 1000.0f;  // very bad magic numbers
-            m_max_pulse = 2000.0f;  // change to defines
 
             gpio_init(m_gpio);
             gpio_set_function(m_gpio, GPIO_FUNC_PWM);
@@ -74,8 +72,8 @@ namespace Steckinator {
         uint m_channel;
         uint16_t m_wrap;
 
-        float m_min_pulse;
-        float m_max_pulse;
+        const float m_min_pulse =  500.0f;  // [us]
+        const float m_max_pulse = 2500.0f;  // [us]
     };
 
 }
