@@ -29,8 +29,8 @@
 #define MOTION_CONTROLLER_HOMING_DISTANCE              400          // Number of steps until homing position is guaranteed [mm]
 #define MOTION_CONTROLLER_MOTION_QUEUE_SIZE             10          // How many events can be saved in the queue
 
-#define MOTION_CONTROLLER_MAX_Z_ANGLE                   85
-#define MOTION_CONTROLLER_MIN_Z_ANGLE                   10
+#define MOTION_CONTROLLER_MAX_Z_ANGLE                   85.f
+#define MOTION_CONTROLLER_MIN_Z_ANGLE                   10.f
 
 // ----------------------------------------------------------------------------------------------------
 // STEPPER MOTOR

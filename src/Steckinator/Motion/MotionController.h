@@ -19,6 +19,7 @@
 #include "Steckinator/Motion/MotionEvent.h"
 #include "Steckinator/Motion/MotionQueue.h"
 #include "Steckinator/Driver/Stepper/StepperMotor.h"
+#include "Steckinator/Driver/Servo/Servo.h"
 #include "Steckinator/Driver/Switch/Switch.h"
 #include "Steckinator/Driver/Led/Led.h"
 #include "Steckinator/Driver/VacuumPump/VacuumPump.h"
@@ -114,6 +115,8 @@ namespace Steckinator {
         StepperMotor   m_motorB;            // Motor B (core xy)
         StepperMotor   m_motorC;            // Motor C (rotation)
     
+        Servo          m_servoZ;            // Servo Z
+
         Switch         m_swX;
         Switch         m_swY;
 
@@ -125,7 +128,7 @@ namespace Steckinator {
         float m_posX = 0.0f;                // [mm]
         float m_posY = 0.0f;                // [mm]
         float m_posC = 0.0f;                // [deg]
-        //float m_posE = 0.0f;
+        float m_posZ = 0.0f;                // [deg]
 
     };
 
