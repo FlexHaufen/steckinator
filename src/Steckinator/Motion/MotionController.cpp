@@ -28,6 +28,7 @@ namespace Steckinator {
         auto offset = StepperMotor::GetStepperProgramOffset(pio0);
         m_motorA.Init(pio0, 0, offset, GPIO_M0_STEP, GPIO_M0_DIR, MOTION_CONTROLLER_STEPS_PER_MM_XY);
         m_motorB.Init(pio0, 1, offset, GPIO_M1_STEP, GPIO_M1_DIR, MOTION_CONTROLLER_STEPS_PER_MM_XY);
+        m_motorC.Init(pio0, 2, offset, GPIO_M2_STEP, GPIO_M2_DIR, MOTION_CONTROLLER_STEPS_PER_DEG_C);
 
         m_swX.Init(GPIO_SW_0);
         m_swY.Init(GPIO_SW_1);
@@ -150,12 +151,15 @@ namespace Steckinator {
         // CoreXY: A = ΔX + ΔY,  B = ΔX - ΔY
         Steps stepsA = m_motorA.ToSteps(dY + dX);
         Steps stepsB = m_motorB.ToSteps(dY - dX);
+        Steps stepsC = m_motorC.ToSteps(e.c.value_or(0));
         
         if (stepsA != 0) { m_motorA.MoveRelative(stepsA, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1),  StepperMotor::AccelerationMethod::RAMP); }
         if (stepsB != 0) { m_motorB.MoveRelative(stepsB, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1),  StepperMotor::AccelerationMethod::RAMP); }
+        if (stepsC != 0) { m_motorC.MoveRelative(stepsC, MOTION_CONTROLLER_DEFAULT_FEED_RATE_C, StepperMotor::AccelerationMethod::NONE); }
 
         if (e.x.has_value()) { m_posX = e.x.value(); }
         if (e.y.has_value()) { m_posY = e.y.value(); }
+        if (e.c.has_value()) { m_posC = e.c.value(); }
 
         return;
     }
@@ -170,7 +174,7 @@ namespace Steckinator {
     }
 
     bool MotionController::AreMotorsIdle() {
-        return (!m_motorA.IsBusy() && !m_motorB.IsBusy());
+        return (!m_motorA.IsBusy() && !m_motorB.IsBusy() && !m_motorC.IsBusy());
     }
 
 } 

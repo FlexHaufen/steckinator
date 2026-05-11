@@ -22,8 +22,8 @@ namespace Steckinator {
      */
     enum class MotionCommand {
         INVALID = 0,
-        G0,                     // Rapid positioning    [x, y, z, a]
-        G1,                     // Linear Interpolation [x, y, z, a, f]
+        G0,                     // Rapid positioning    [x, y, z, c]
+        G1,                     // Linear Interpolation [x, y, z, c, f]
         G28,                    // Home all axes
         M10,                    // Enable gripper
         M11                     // Disable gripper
@@ -40,7 +40,7 @@ namespace Steckinator {
         std::optional<float> x = std::nullopt;
         std::optional<float> y = std::nullopt;
         std::optional<float> z = std::nullopt;
-        std::optional<float> a = std::nullopt;
+        std::optional<float> c = std::nullopt;
 
         std::optional<float> f = std::nullopt;
 

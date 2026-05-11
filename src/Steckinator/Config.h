@@ -24,6 +24,7 @@
 
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        100          // [mm/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_C          100          // [deg/s]
 
 #define MOTION_CONTROLLER_HOMING_DISTANCE              400          // Number of steps until homing position is guaranteed [mm]
 #define MOTION_CONTROLLER_MOTION_QUEUE_SIZE             10          // How many events can be saved in the queue
@@ -101,6 +102,6 @@
 #define GCODE_AXIS_X      'X'
 #define GCODE_AXIS_Y      'Y'
 #define GCODE_AXIS_Z      'Z'
-#define GCODE_AXIS_A      'A'
+#define GCODE_AXIS_C      'C'
 
 #define GCODE_FEED_RATE   'F'

@@ -110,8 +110,9 @@ namespace Steckinator {
         } m_homingPhase = HomingPhase::PHASE_Y;
 
 
-        StepperMotor   m_motorA;            // Motor A
-        StepperMotor   m_motorB;            // Motor B
+        StepperMotor   m_motorA;            // Motor A (core xy)
+        StepperMotor   m_motorB;            // Motor B (core xy)
+        StepperMotor   m_motorC;            // Motor C (rotation)
     
         Switch         m_swX;
         Switch         m_swY;
@@ -121,9 +122,9 @@ namespace Steckinator {
     
         Led m_led_status;
 
-        float m_posX = 0.0f;
-        float m_posY = 0.0f;
-        //float m_posZ = 0.0f;
+        float m_posX = 0.0f;                // [mm]
+        float m_posY = 0.0f;                // [mm]
+        float m_posC = 0.0f;                // [deg]
         //float m_posE = 0.0f;
 
     };

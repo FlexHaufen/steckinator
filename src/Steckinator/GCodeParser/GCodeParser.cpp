@@ -73,8 +73,8 @@ namespace Steckinator {
                 case GCODE_AXIS_Z:
                     event.z = std::atof(p_line + 1);
                     break;
-                case GCODE_AXIS_A:
-                    event.a = std::atof(p_line + 1);
+                case GCODE_AXIS_C:
+                    event.c = std::atof(p_line + 1);
                     break;
                 case GCODE_FEED_RATE:
                     event.f = std::atof(p_line + 1);
