@@ -95,12 +95,12 @@ namespace Steckinator {
 
             case MotionCommand::M10:
                 m_vacuumPump.On();
-                m_state = State::EXECUTING_HOMING;     
+                m_state = State::EXECUTING_MOVE;     
                 break;
 
             case MotionCommand::M11:
                 m_vacuumPump.Off();
-                m_state = State::EXECUTING_HOMING;
+                m_state = State::EXECUTING_MOVE;
                 break;
 
             case MotionCommand::INVALID:    // intended fallthrough
