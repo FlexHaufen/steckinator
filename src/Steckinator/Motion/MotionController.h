@@ -12,7 +12,6 @@
 
 // *** INCLUDES ***
 
-#include <cmath>
 #include <functional>
 
 #include "Steckinator/Config.h"
@@ -92,7 +91,6 @@ namespace Steckinator {
          */
         void ExecuteCommand_Homing();
 
-        Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * MOTION_CONTROLLER_STEPS_PER_MM_XY)); }
     
     private:
 

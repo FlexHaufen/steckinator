@@ -20,6 +20,8 @@
 // MOTION CONTROLLER
 // ----------------------------------------------------------------------------------------------------
 #define MOTION_CONTROLLER_STEPS_PER_MM_XY               40          // [steps/mm]   (motor_steps_per_rev * microsteps) / mm_per_rev = (200 * 8) / 40
+#define MOTION_CONTROLLER_STEPS_PER_DEG_C                4.44f      // [steps/deg]  (motor_steps_per_rev * microsteps) / mm_per_rev = (200 * 8) / 360
+
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        100          // [mm/s]
 

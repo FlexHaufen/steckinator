@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <vector>
+#include <cmath>
 #include <pico/stdlib.h>
 #include <hardware/pio.h>
 #include <hardware/dma.h>
@@ -39,7 +40,7 @@ namespace Steckinator {
          * @param pinDir                    GPIO for DIR output
          * @param stepsPerMm                [steps/mm]
          */
-        void Init(PIO pio, uint stateMachineIndex, uint programOffset, uint pinStep, uint pinDir, uint stepsPerMm);
+        void Init(PIO pio, uint stateMachineIndex, uint programOffset, uint pinStep, uint pinDir, float stepsPerMm);
 
 
         enum class AccelerationMethod {
@@ -76,6 +77,14 @@ namespace Steckinator {
          * @return uint     The program offset
          */
         static uint GetStepperProgramOffset(PIO pio) { return pio_add_program(pio, &stepper_program);}
+
+        /**
+         * @brief Convert the given distance to steps
+         * 
+         * @param mm        Distance [mm]
+         * @return Steps    Distance [steps]
+         */
+        Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * m_stepsPerMm)); }
 
     private:
 

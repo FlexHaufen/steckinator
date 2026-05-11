@@ -21,7 +21,7 @@
 // *** NAMESPACE ***
 namespace Steckinator {
 
-    void StepperMotor::Init(PIO pio, uint stateMachineIndex, uint programOffset, uint pinStep, uint pinDir, uint stepsPerMm) {
+    void StepperMotor::Init(PIO pio, uint stateMachineIndex, uint programOffset, uint pinStep, uint pinDir, float stepsPerMm) {
         m_pio = pio;
         m_stateMachineIndex = stateMachineIndex;
         m_programOffset = programOffset;

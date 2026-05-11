@@ -114,8 +114,8 @@ namespace Steckinator {
                     m_homingPhase = HomingPhase::PHASE_X;
 
                     // Kick off X-axis homing
-                    m_motorA.MoveRelative(-ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
-                    m_motorB.MoveRelative(-ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+                    m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+                    m_motorB.MoveRelative(-m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
                 }
                 break;
 
@@ -148,8 +148,8 @@ namespace Steckinator {
         float dY = e.y.value_or(m_posY) - m_posY;
         
         // CoreXY: A = ΔX + ΔY,  B = ΔX - ΔY
-        Steps stepsA = ToSteps(dY + dX);
-        Steps stepsB = ToSteps(dY - dX);
+        Steps stepsA = m_motorA.ToSteps(dY + dX);
+        Steps stepsB = m_motorB.ToSteps(dY - dX);
         
         if (stepsA != 0) { m_motorA.MoveRelative(stepsA, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1),  StepperMotor::AccelerationMethod::RAMP); }
         if (stepsB != 0) { m_motorB.MoveRelative(stepsB, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1),  StepperMotor::AccelerationMethod::RAMP); }
@@ -164,8 +164,8 @@ namespace Steckinator {
         m_homingPhase = HomingPhase::PHASE_Y;
 
         // Kick off Y-axis homing move (large step count, motors will be stopped when switch triggers)
-        m_motorA.MoveRelative(-ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
-        m_motorB.MoveRelative( ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+        m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+        m_motorB.MoveRelative( m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
         return;
     }
 
