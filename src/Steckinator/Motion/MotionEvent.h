@@ -35,14 +35,14 @@ namespace Steckinator {
      */
     struct MotionEvent {
 
-        MotionCommand command = MotionCommand::INVALID;
+        MotionCommand command = MotionCommand::INVALID;     // GCode Command
 
-        std::optional<float> x = std::nullopt;
-        std::optional<float> y = std::nullopt;
-        std::optional<float> z = std::nullopt;
-        std::optional<float> c = std::nullopt;
+        std::optional<float> x = std::nullopt;              // Absolute position X  
+        std::optional<float> y = std::nullopt;              // Absolute position Y
+        std::optional<float> z = std::nullopt;              // Absolute position Z
+        std::optional<float> c = std::nullopt;              // Absolute position C  (rotation)
 
-        std::optional<float> f = std::nullopt;
+        std::optional<float> f = std::nullopt;              // Feedrate
 
     };
 
