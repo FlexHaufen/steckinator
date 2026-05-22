@@ -107,6 +107,8 @@ namespace Steckinator {
         enum class HomingPhase {
             PHASE_Y,                        // moving toward Y endstop
             PHASE_X,                        // moving toward X endstop  
+            PHASE_Z,                        // moving toward Z endstop
+            PHASE_C,                        // moving toward C endstop
             PHASE_DONE
         } m_homingPhase = HomingPhase::PHASE_Y;
 
@@ -119,6 +121,7 @@ namespace Steckinator {
 
         Switch         m_swX;
         Switch         m_swY;
+        Switch         m_swC;
 
         VacuumPump     m_vacuumPump;        // Vacuum Pump
 

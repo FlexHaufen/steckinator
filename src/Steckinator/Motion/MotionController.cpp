@@ -35,6 +35,7 @@ namespace Steckinator {
 
         m_swX.Init(GPIO_SW_0);
         m_swY.Init(GPIO_SW_1);
+        m_swC.Init(GPIO_SW_2);
 
         m_vacuumPump.Init(GPIO_M0_DC_OUT1, GPIO_M0_DC_OUT2);
 
@@ -111,15 +112,26 @@ namespace Steckinator {
 
     void MotionController::ExecuteCommand_Homing() {
         switch (m_homingPhase) {
+
+            case HomingPhase::PHASE_Z:
+                m_servoZ.SetAngle(MOTION_CONTROLLER_MAX_Z_ANGLE);
+                m_motorA.Stop();
+                m_motorB.Stop();
+                // Kick off Y-axis homing move (large step count, motors will be stopped when switch triggers)
+                m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+                m_motorB.MoveRelative( m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+                m_homingPhase = HomingPhase::PHASE_Y;
+                break;
+
             case HomingPhase::PHASE_Y:
                 if (m_swY.Get()) {
                     m_motorA.Stop();
-                    m_motorB.Stop();
-                    m_homingPhase = HomingPhase::PHASE_X;
-
+                    m_motorB.Stop();                    
                     // Kick off X-axis homing
                     m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
                     m_motorB.MoveRelative(-m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+                    
+                    m_homingPhase = HomingPhase::PHASE_X;
                 }
                 break;
 
@@ -131,8 +143,19 @@ namespace Steckinator {
                     m_posX = 0.f;
                     m_posY = 0.f;
 
+                    m_motorC.MoveRelative(-m_motorC.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), 100, StepperMotor::AccelerationMethod::NONE);
+                    m_homingPhase = HomingPhase::PHASE_C;
+                }
+                break;
+
+            case HomingPhase::PHASE_C:
+                if (m_swC.Get()) {
+
+                    m_motorC.Stop();
+
                     m_homingPhase = HomingPhase::PHASE_DONE;
                     m_state = State::IDLE;
+
                     //DisableMotors();
                     ResponseQueue::Instance().Push(Response::OK);
                     m_led_status.Off();
@@ -176,11 +199,7 @@ namespace Steckinator {
     }
 
     void MotionController::StartHoming() {
-        m_homingPhase = HomingPhase::PHASE_Y;
-
-        // Kick off Y-axis homing move (large step count, motors will be stopped when switch triggers)
-        m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
-        m_motorB.MoveRelative( m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+        m_homingPhase = HomingPhase::PHASE_Z;
         return;
     }
 
