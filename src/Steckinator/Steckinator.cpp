@@ -68,12 +68,14 @@ namespace Steckinator {
             while (true) {
 
                 // wait for command
-                auto c = uart.readLine();           // blocking
+                auto c = uart.readLine();                                   // blocking
                 MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
 
                 // wait for execution to finish
                 auto response = ResponseQueue::Instance().PopBlocking();    // blocking
-                uart.writeLine(( response == Response::OK) ? "ok" : "error");
+                uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
+
+                sleep_ms(CORE1_IDLE_TIME);
             }
 
         #endif
@@ -89,11 +91,11 @@ namespace Steckinator {
         MotionController mc;
         mc.Init();
 
-        LOG_INFO("Started CORE0");
+        LOG_INFO("Started CORE1");
         
         while (true) {
             mc.Update();
-            sleep_ms(10);
+            sleep_ms(CORE1_IDLE_TIME);
         }
 
         // never leave
