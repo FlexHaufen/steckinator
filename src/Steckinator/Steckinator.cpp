@@ -63,6 +63,8 @@ namespace Steckinator {
             Uart uart(uart1, GPIO_UART1_TX, GPIO_UART1_RX, 115200);
             uart.begin();
 
+            LOG_INFO("Started CORE0");
+
             while (true) {
 
                 // wait for command
@@ -77,6 +79,7 @@ namespace Steckinator {
         #endif
 
         // never leave
+        LOG_CRITICAL("CORE0 reached end of program unexpected. This must not happen");
         for (;;) {}
     }
 
@@ -85,6 +88,8 @@ namespace Steckinator {
         
         MotionController mc;
         mc.Init();
+
+        LOG_INFO("Started CORE0");
         
         while (true) {
             mc.Update();
@@ -92,6 +97,7 @@ namespace Steckinator {
         }
 
         // never leave
+        LOG_CRITICAL("CORE1 reached end of program unexpected. This must not happen");
         for (;;) {}
     }
 }
