@@ -131,7 +131,7 @@ namespace Steckinator {
         float m_posX = 0.0f;                // [mm]
         float m_posY = 0.0f;                // [mm]
         float m_posC = 0.0f;                // [deg]
-        float m_posZ = 0.0f;                // [deg]
+        float m_posZ = MOTION_CONTROLLER_MAX_Z_ANGLE;                // [deg]
 
     };
 

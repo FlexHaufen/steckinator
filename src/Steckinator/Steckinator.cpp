@@ -72,7 +72,7 @@ namespace Steckinator {
                 MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
 
                 // wait for execution to finish
-                auto response = ResponseQueue::Instance().PopBlocking();    // blocking
+                auto response = ResponseQueue::Instance().PopBlocking();    // blocking1
                 uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
 
                 sleep_ms(CORE1_IDLE_TIME);

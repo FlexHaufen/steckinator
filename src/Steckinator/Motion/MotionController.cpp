@@ -174,25 +174,23 @@ namespace Steckinator {
         // Calculate the relative movement
         float dX = e.x.value_or(m_posX) - m_posX;
         float dY = e.y.value_or(m_posY) - m_posY;
-        float dZ = e.z.value_or(m_posZ) - m_posZ;
         float dC = e.c.value_or(m_posC) - m_posC;
         
         // Convert to steps and degrees
         Steps stepsA = m_motorA.ToSteps(dY + dX);                                                   // Core XY: A = ΔX + ΔY
         Steps stepsB = m_motorB.ToSteps(dY - dX);                                                   // Core XY: B = ΔX - ΔY
-        Deg degZ = std::clamp(MOTION_CONTROLLER_MIN_Z_ANGLE, dZ, MOTION_CONTROLLER_MAX_Z_ANGLE);    // Z
         Steps stepsC = m_motorC.ToSteps(dC);                                                        // rotation
 
         // Update absolute position
         m_posX += dX;
         m_posY += dY;
-        m_posZ += dZ;
+        m_posZ = std::clamp(MOTION_CONTROLLER_MIN_Z_ANGLE, e.z.value_or(m_posZ), MOTION_CONTROLLER_MAX_Z_ANGLE);
         m_posC += dC;
         
         // Queue movements
         if (stepsA != 0) { m_motorA.MoveRelative(stepsA, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1),  StepperMotor::AccelerationMethod::RAMP); }
         if (stepsB != 0) { m_motorB.MoveRelative(stepsB, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1),  StepperMotor::AccelerationMethod::RAMP); }
-        if (degZ != 0)   { m_servoZ.SetAngle(m_posZ); }
+        m_servoZ.SetAngle(m_posZ);
         if (stepsC != 0) { m_motorC.MoveRelative(stepsC, MOTION_CONTROLLER_DEFAULT_FEED_RATE_C, StepperMotor::AccelerationMethod::NONE); }
 
         return;
