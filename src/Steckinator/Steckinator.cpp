@@ -69,11 +69,18 @@ namespace Steckinator {
 
                 // wait for command
                 auto c = uart.readLine();                                   // blocking
-                MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
 
-                // wait for execution to finish
-                auto response = ResponseQueue::Instance().PopBlocking();    // blocking1
-                uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
+                if (c == "emergency_stop") {
+
+                }
+                else {
+                    MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
+    
+                    // wait for execution to finish
+                    auto response = ResponseQueue::Instance().PopBlocking();    // blocking
+                    uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
+
+                }
 
                 sleep_ms(CORE1_IDLE_TIME);
             }

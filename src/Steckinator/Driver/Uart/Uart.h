@@ -57,6 +57,17 @@ namespace Steckinator {
          */
         std::string readLine();
 
+        /**
+         * @brief Non-blocking line reader
+         *
+         * Reads currently available bytes and returns true once a full line
+         * (terminated by '\n') is available.
+         *
+         * @param outLine   The completed line when return value is true
+         * @return true     A full line was read, else false
+         */
+        bool tryReadLine(std::string& outLine);
+
     private:
 
         // ** Members **
@@ -64,6 +75,7 @@ namespace Steckinator {
         uint m_pinTx;
         uint m_pinRx;
         uint m_baudrate;
+        std::string m_rxBuffer;
     };
 }
 

@@ -20,6 +20,8 @@
 // *** NAMESPACE ***
 namespace Steckinator {
 
+    std::atomic<bool> MotionController::s_emergencyStopRequested{false};
+
 
     void MotionController::Init() {
 
@@ -44,6 +46,11 @@ namespace Steckinator {
 
 
     void MotionController::Update() {
+        if (s_emergencyStopRequested.exchange(false)) {
+            ExecuteEmergencyStop();
+            return;
+        }
+
         switch (m_state) {
 
             case State::IDLE: {
@@ -78,6 +85,10 @@ namespace Steckinator {
             default:
                 break;
         }
+    }
+
+    void MotionController::RequestEmergencyStop() {
+        s_emergencyStopRequested.store(true);
     }
 
     void MotionController::ExecuteCommand(const MotionEvent& e) {
@@ -166,6 +177,23 @@ namespace Steckinator {
                 break;
         }
         return;
+    }
+
+    void MotionController::ExecuteEmergencyStop() {
+        m_motorA.Stop();
+        m_motorB.Stop();
+        m_motorC.Stop();
+
+        MotionQueue::Instance().Clear();
+
+        m_state = State::IDLE;
+        m_homingPhase = HomingPhase::PHASE_Z;
+        m_led_status.Off();
+        DisableMotors();
+
+        ResponseQueue::Instance().Push(Response::ERROR);
+
+        LOG_ERROR("Emergency stop executed");
     }
 
 

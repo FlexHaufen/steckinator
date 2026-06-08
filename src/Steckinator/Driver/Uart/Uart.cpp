@@ -51,4 +51,19 @@ namespace Steckinator {
         return result;
     }
 
+    bool Uart::tryReadLine(std::string& outLine) {
+        while (uart_is_readable(m_uart)) {
+            const char c = uart_getc(m_uart);
+            if (c == '\n') {
+                outLine = m_rxBuffer;
+                m_rxBuffer.clear();
+                return true;
+            }
+            if (c != '\r') {
+                m_rxBuffer += c;
+            }
+        }
+        return false;
+    }
+
 }
