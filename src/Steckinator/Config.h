@@ -21,7 +21,7 @@
 // ----------------------------------------------------------------------------------------------------
 // DEBUG
 // ----------------------------------------------------------------------------------------------------
-#define STECKINATOR_RUN_DEBUG_PROGRAM               true           // Run a predefined program insted of parsing the commands from the MainController
+#define STECKINATOR_RUN_DEBUG_PROGRAM               false           // Run a predefined program insted of parsing the commands from the MainController
 
 // ----------------------------------------------------------------------------------------------------
 // MOTION CONTROLLER
