@@ -21,7 +21,7 @@
 // ----------------------------------------------------------------------------------------------------
 // DEBUG
 // ----------------------------------------------------------------------------------------------------
-#define STECKINATOR_RUN_DEBUG_PROGRAM               false           // Run a predefined program insted of parsing the commands from the MainController
+#define STECKINATOR_RUN_DEBUG_PROGRAM               true           // Run a predefined program insted of parsing the commands from the MainController
 
 // ----------------------------------------------------------------------------------------------------
 // MOTION CONTROLLER
@@ -30,10 +30,10 @@
 #define MOTION_CONTROLLER_STEPS_PER_DEG_C                4.44f      // [steps/deg]  (motor_steps_per_rev * microsteps) / mm_per_rev = (200 * 8) / 360
 
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        100          // [mm/s]
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_C          100          // [deg/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        400          // [mm/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_C          400          // [deg/s]
 
-#define MOTION_CONTROLLER_HOMING_DISTANCE              400          // Number of steps until homing position is guaranteed [mm]
+#define MOTION_CONTROLLER_HOMING_DISTANCE              300          // Number of steps until homing position is guaranteed [mm]
 #define MOTION_CONTROLLER_MOTION_QUEUE_SIZE             10          // How many events can be saved in the queue
 
 #define MOTION_CONTROLLER_MAX_Z_ANGLE                   85.f

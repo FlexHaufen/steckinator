@@ -12,10 +12,12 @@
 
 #include "Steckinator/Config.h"
 #include "Steckinator/Log/Log.h"
+#include "Steckinator/Helper/Types.h"
 
 #include <cmath>
 #include <algorithm>
 #include "Steckinator/Communication/ResponseQueue.h"
+#include "Steckinator/Core/GpioIrqManager.h"
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -71,8 +73,21 @@ namespace Steckinator {
                 break;
 
             case State::EXECUTING_HOMING:
-                EnableMotors();
-                ExecuteCommand_Homing();
+                ContinueHomingXY();
+                if (m_homingState.Homed() && AreMotorsIdle()) {
+                    m_posX = 0.f;
+                    m_posY = 0.f;
+
+                    m_state = State::IDLE;
+
+                    //DisableMotors();
+                    GpioIrqManager::instance().unregisterCallback(m_swX.GetPin());
+                    GpioIrqManager::instance().unregisterCallback(m_swY.GetPin());
+                    GpioIrqManager::instance().unregisterCallback(m_swC.GetPin());
+                    ResponseQueue::Instance().Push(Response::OK);
+                    m_led_status.Off();
+                }
+
                 break;
 
             default:
@@ -110,65 +125,6 @@ namespace Steckinator {
         }
     }
 
-    void MotionController::ExecuteCommand_Homing() {
-        switch (m_homingPhase) {
-
-            case HomingPhase::PHASE_Z:
-                m_servoZ.SetAngle(MOTION_CONTROLLER_MAX_Z_ANGLE);
-                m_motorA.Stop();
-                m_motorB.Stop();
-                // Kick off Y-axis homing move (large step count, motors will be stopped when switch triggers)
-                m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
-                m_motorB.MoveRelative( m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
-                m_homingPhase = HomingPhase::PHASE_Y;
-                break;
-
-            case HomingPhase::PHASE_Y:
-                if (m_swY.Get()) {
-                    m_motorA.Stop();
-                    m_motorB.Stop();                    
-                    // Kick off X-axis homing
-                    m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
-                    m_motorB.MoveRelative(-m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
-                    
-                    m_homingPhase = HomingPhase::PHASE_X;
-                }
-                break;
-
-            case HomingPhase::PHASE_X:
-                if (m_swX.Get()) {
-                    m_motorA.Stop();
-                    m_motorB.Stop();
-
-                    m_posX = 0.f;
-                    m_posY = 0.f;
-
-                    m_motorC.MoveRelative(-m_motorC.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), 100, StepperMotor::AccelerationMethod::NONE);
-                    m_homingPhase = HomingPhase::PHASE_C;
-                }
-                break;
-
-            case HomingPhase::PHASE_C:
-                if (m_swC.Get()) {
-
-                    m_motorC.Stop();
-
-                    m_homingPhase = HomingPhase::PHASE_DONE;
-                    m_state = State::IDLE;
-
-                    //DisableMotors();
-                    ResponseQueue::Instance().Push(Response::OK);
-                    m_led_status.Off();
-                }
-                break;
-
-            default:
-                break;
-        }
-        return;
-    }
-
-
     void MotionController::StartLinearMove(const MotionEvent& e) {
 
         // Calculate the relative movement
@@ -197,12 +153,145 @@ namespace Steckinator {
     }
 
     void MotionController::StartHoming() {
-        m_homingPhase = HomingPhase::PHASE_Z;
+
+        // Reset/initialize homing state from current switch levels.
+        m_homingState.axis_x_homed = m_swX.Get();
+        m_homingState.axis_y_homed = m_swY.Get();
+        m_homingState.axis_c_homed = m_swC.Get();
+
+        // unregister any existing callbacks for the switches, to avoid double registration.
+        GpioIrqManager::instance().unregisterCallback(m_swX.GetPin());
+        GpioIrqManager::instance().unregisterCallback(m_swY.GetPin());
+        GpioIrqManager::instance().unregisterCallback(m_swC.GetPin());
+
+        if (!m_homingState.axis_x_homed || !m_homingState.axis_y_homed) {
+            RegisterHomingCallbacksXY();
+        }
+
+        // Home X/Y: first try diagonal move towards the corner.
+        if (!m_homingState.axis_x_homed && !m_homingState.axis_y_homed) {
+            StartHomingXYDiagonal();
+        }
+        else if (!m_homingState.axis_x_homed) {
+            StartHomingXOnly();
+        }
+        else if (!m_homingState.axis_y_homed) {
+            StartHomingYOnly();
+        }
+        else {
+            m_homingPhase = HomingPhase::PHASE_DONE;
+        }
+
+        // Home C independent in parallel.
+        if (!m_homingState.axis_c_homed) {
+            m_motorC.MoveRelative(-m_motorC.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+            GpioIrqManager::instance().registerCallback(
+                m_swC.GetPin(), 
+                GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL,
+                [this](uint gpio, uint32_t events) {
+                    UNUSED(gpio); UNUSED(events);
+
+                    if (!m_swC.Get()) {
+                        return;
+                    }
+                    m_motorC.Stop();
+                    m_homingState.axis_c_homed = true;
+                    GpioIrqManager::instance().unregisterCallback(m_swC.GetPin());
+                }
+            );
+        }
+
         return;
     }
 
     bool MotionController::AreMotorsIdle() {
         return (!m_motorA.IsBusy() && !m_motorB.IsBusy() && !m_motorC.IsBusy());
+    }
+
+    void MotionController::ContinueHomingXY() {
+        if (!AreMotorsIdle()) {
+            return;
+        }
+
+        if (m_homingState.axis_x_homed && m_homingState.axis_y_homed) {
+            m_homingPhase = HomingPhase::PHASE_DONE;
+            return;
+        }
+
+        if (m_homingState.axis_x_homed && !m_homingState.axis_y_homed && m_homingPhase != HomingPhase::PHASE_Y_ONLY) {
+            StartHomingYOnly();
+            return;
+        }
+
+        if (!m_homingState.axis_x_homed && m_homingState.axis_y_homed && m_homingPhase != HomingPhase::PHASE_X_ONLY) {
+            StartHomingXOnly();
+            return;
+        }
+    }
+
+    void MotionController::StartHomingXYDiagonal() {
+        m_homingPhase = HomingPhase::PHASE_XY_DIAGONAL;
+
+        // CoreXY mapping:
+        // X- => A-, B-
+        // Y- => A-, B+
+        // Combined (X- and Y- simultaneously) => A-, B~0 (corner move)
+        const Steps stepsA = -m_motorA.ToSteps(2.0f * MOTION_CONTROLLER_HOMING_DISTANCE);
+        m_motorA.MoveRelative(stepsA, MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+    }
+
+    void MotionController::StartHomingXOnly() {
+        m_homingPhase = HomingPhase::PHASE_X_ONLY;
+        m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+        m_motorB.MoveRelative(-m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+    }
+
+    void MotionController::StartHomingYOnly() {
+        m_homingPhase = HomingPhase::PHASE_Y_ONLY;
+        m_motorA.MoveRelative(-m_motorA.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+        m_motorB.MoveRelative( m_motorB.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28, StepperMotor::AccelerationMethod::NONE);
+    }
+
+    void MotionController::RegisterHomingCallbacksXY() {
+        GpioIrqManager::instance().registerCallback(
+            m_swX.GetPin(),
+            GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL,
+            [this](uint gpio, uint32_t events) {
+                UNUSED(gpio); UNUSED(events);
+
+                if (!m_swX.Get()) {
+                    return;
+                }
+
+                if (m_homingState.axis_x_homed) {
+                    return;
+                }
+
+                m_homingState.axis_x_homed = true;
+                m_motorA.Stop();
+                m_motorB.Stop();
+            }
+        );
+
+        GpioIrqManager::instance().registerCallback(
+            m_swY.GetPin(),
+            GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL,
+            [this](uint gpio, uint32_t events) {
+                UNUSED(gpio); UNUSED(events);
+
+                if (!m_swY.Get()) {
+                    return;
+                }
+
+                if (m_homingState.axis_y_homed) {
+                    return;
+                }
+
+                m_homingState.axis_y_homed = true;
+                m_motorA.Stop();
+                m_motorB.Stop();
+            }
+        );
     }
 
 } 

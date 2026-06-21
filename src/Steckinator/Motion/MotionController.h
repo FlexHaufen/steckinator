@@ -68,6 +68,11 @@ namespace Steckinator {
     
         void StartLinearMove(const MotionEvent& e);
         void StartHoming();
+        void ContinueHomingXY();
+        void StartHomingXYDiagonal();
+        void StartHomingXOnly();
+        void StartHomingYOnly();
+        void RegisterHomingCallbacksXY();
 
         /**
          * @brief Checks if all motors are idle
@@ -105,12 +110,20 @@ namespace Steckinator {
 
 
         enum class HomingPhase {
-            PHASE_Y,                        // moving toward Y endstop
-            PHASE_X,                        // moving toward X endstop  
-            PHASE_Z,                        // moving toward Z endstop
-            PHASE_C,                        // moving toward C endstop
+            PHASE_XY_DIAGONAL,              // home X and Y simultaneously (towards corner)
+            PHASE_X_ONLY,                   // X remaining
+            PHASE_Y_ONLY,                   // Y remaining
             PHASE_DONE
-        } m_homingPhase = HomingPhase::PHASE_Y;
+        } m_homingPhase = HomingPhase::PHASE_DONE;
+
+        struct HomingState {
+            bool axis_x_homed = false;
+            bool axis_y_homed = false;
+            bool axis_c_homed = false;
+
+            bool Homed() { return axis_x_homed && axis_y_homed && axis_c_homed; }
+        } m_homingState;
+
 
 
         StepperMotor   m_motorA;            // Motor A (core xy)
