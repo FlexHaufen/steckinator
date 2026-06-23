@@ -37,9 +37,11 @@ namespace Steckinator {
         // inverted
         bool Get() { return !gpio_get(m_pin); }
 
+        uint32_t GetPin() { return m_pin; }
+
     private:
         // ** Members **
-        uint m_pin = 0;
+        uint32_t m_pin = 0;
 
     };
 

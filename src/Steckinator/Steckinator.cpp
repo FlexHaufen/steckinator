@@ -46,55 +46,60 @@ namespace Steckinator {
 
     void Steckinator::Core0Run() {
 
-        Uart uart(uart1, GPIO_UART1_TX, GPIO_UART1_RX, 115200);
-        uart.begin();
+        #if STECKINATOR_RUN_DEBUG_PROGRAM
+            
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G28"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("M10"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F1000"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F1000"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("M11"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F1000"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F1000"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 Y200 F1000"));
+            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F1000"));
+        
+        #else
+        
+            Uart uart(uart1, GPIO_UART1_TX, GPIO_UART1_RX, 115200);
+            uart.begin();
 
-        while (true) {
+            LOG_INFO("Started CORE0");
 
-            // wait for command
-            auto c = uart.readLine();           // blocking
-            MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
+            while (true) {
 
-            // wait for execution to finish
-            auto response = ResponseQueue::Instance().PopBlocking();    // blocking
-            uart.writeLine(( response == Response::OK) ? "ok" : "error");
+                // wait for command
+                auto c = uart.readLine();                                   // blocking
+                MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
 
-        }
+                // wait for execution to finish
+                auto response = ResponseQueue::Instance().PopBlocking();    // blocking1
+                uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
 
-        /*
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G28"));
-        //MotionQueue::Instance().Push(GCodeParser::ParseLine("M10"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F1000"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F1000"));
-        //MotionQueue::Instance().Push(GCodeParser::ParseLine("M11"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F1000"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F1000"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F1000"));
-        MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F1000"));
-        */
+                sleep_ms(CORE1_IDLE_TIME);
+            }
+
+        #endif
 
         // never leave
+        LOG_CRITICAL("CORE0 reached end of program unexpected. This must not happen");
         for (;;) {}
     }
 
     void Steckinator::Core1Run() {
-
-        // TODO (flex): Move this shit to the StepperMotor driver
-        // currently this is used for enabling the drivers
-        // as the enable pin is common
-        gpio_init(GPIO_M_EN);
-        gpio_set_dir(GPIO_M_EN, GPIO_OUT);
-        gpio_put(GPIO_M_EN, false);
-
+        
+        
         MotionController mc;
         mc.Init();
+
+        LOG_INFO("Started CORE1");
         
         while (true) {
             mc.Update();
-            sleep_ms(10);
+            sleep_ms(CORE1_IDLE_TIME);
         }
 
         // never leave
+        LOG_CRITICAL("CORE1 reached end of program unexpected. This must not happen");
         for (;;) {}
     }
 }

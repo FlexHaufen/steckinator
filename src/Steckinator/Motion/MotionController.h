@@ -12,7 +12,6 @@
 
 // *** INCLUDES ***
 
-#include <cmath>
 #include <functional>
 
 #include "Steckinator/Config.h"
@@ -20,6 +19,7 @@
 #include "Steckinator/Motion/MotionEvent.h"
 #include "Steckinator/Motion/MotionQueue.h"
 #include "Steckinator/Driver/Stepper/StepperMotor.h"
+#include "Steckinator/Driver/Servo/Servo.h"
 #include "Steckinator/Driver/Switch/Switch.h"
 #include "Steckinator/Driver/Led/Led.h"
 #include "Steckinator/Driver/VacuumPump/VacuumPump.h"
@@ -47,11 +47,32 @@ namespace Steckinator {
          * 
          */
         void Update();
+
+        /**
+         * @brief Enable all motors
+         * 
+         * The enable pin is shared
+         * 
+         */
+        static void EnableMotors() { gpio_put(GPIO_M_EN, false); /* false means enable */ }
+
+        /**
+         * @brief Disable all motors
+         * 
+         * The enable pin is shared
+         * 
+         */
+        static void DisableMotors() { gpio_put(GPIO_M_EN, true); }
     
     private:
     
         void StartLinearMove(const MotionEvent& e);
         void StartHoming();
+        void ContinueHomingXY();
+        void StartHomingXYDiagonal();
+        void StartHomingXOnly();
+        void StartHomingYOnly();
+        void RegisterHomingCallbacksXY();
 
         /**
          * @brief Checks if all motors are idle
@@ -76,7 +97,6 @@ namespace Steckinator {
          */
         void ExecuteCommand_Homing();
 
-        Steps ToSteps(float mm) const { return static_cast<Steps>(std::roundf(mm * MOTION_CONTROLLER_STEPS_PER_MM_XY)); }
     
     private:
 
@@ -90,27 +110,41 @@ namespace Steckinator {
 
 
         enum class HomingPhase {
-            PHASE_Y,                        // moving toward Y endstop
-            PHASE_X,                        // moving toward X endstop  
+            PHASE_XY_DIAGONAL,              // home X and Y simultaneously (towards corner)
+            PHASE_X_ONLY,                   // X remaining
+            PHASE_Y_ONLY,                   // Y remaining
             PHASE_DONE
-        } m_homingPhase = HomingPhase::PHASE_Y;
+        } m_homingPhase = HomingPhase::PHASE_DONE;
+
+        struct HomingState {
+            bool axis_x_homed = false;
+            bool axis_y_homed = false;
+            bool axis_c_homed = false;
+
+            bool Homed() { return axis_x_homed && axis_y_homed && axis_c_homed; }
+        } m_homingState;
 
 
-        StepperMotor   m_motorA;            // Motor A
-        StepperMotor   m_motorB;            // Motor B
+
+        StepperMotor   m_motorA;            // Motor A (core xy)
+        StepperMotor   m_motorB;            // Motor B (core xy)
+        StepperMotor   m_motorC;            // Motor C (rotation)
     
+        Servo          m_servoZ;            // Servo Z
+
         Switch         m_swX;
         Switch         m_swY;
+        Switch         m_swC;
 
         VacuumPump     m_vacuumPump;        // Vacuum Pump
 
     
         Led m_led_status;
 
-        float m_posX = 0.0f;
-        float m_posY = 0.0f;
-        //float m_posZ = 0.0f;
-        //float m_posE = 0.0f;
+        float m_posX = 0.0f;                // [mm]
+        float m_posY = 0.0f;                // [mm]
+        float m_posC = 0.0f;                // [deg]
+        float m_posZ = MOTION_CONTROLLER_MAX_Z_ANGLE;                // [deg]
 
     };
 

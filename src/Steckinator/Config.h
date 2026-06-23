@@ -11,30 +11,49 @@
 
 // *** DEFINES ***
 
-// --------------------------------------------------
-// MOTION CONTROLLER
-// --------------------------------------------------
-#define MOTION_CONTROLLER_STEPS_PER_MM_XY               40          // [steps/mm]   (motor_steps_per_rev * microsteps) / mm_per_rev = (200 * 8) / 40
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        100          // [mm/s]
 
-#define MOTION_CONTROLLER_HOMING_DISTANCE              400          // Number of steps until homing position is guaranteed [mm]
+// ----------------------------------------------------------------------------------------------------
+// GENERAL
+// ----------------------------------------------------------------------------------------------------
+#define CORE0_IDLE_TIME                                 20          // [ms]
+#define CORE1_IDLE_TIME                                  0          // [ms]
+
+// ----------------------------------------------------------------------------------------------------
+// DEBUG
+// ----------------------------------------------------------------------------------------------------
+#define STECKINATOR_RUN_DEBUG_PROGRAM               false           // Run a predefined program insted of parsing the commands from the MainController
+
+// ----------------------------------------------------------------------------------------------------
+// MOTION CONTROLLER
+// ----------------------------------------------------------------------------------------------------
+#define MOTION_CONTROLLER_STEPS_PER_MM_XY               40          // [steps/mm]   (motor_steps_per_rev * microsteps) / mm_per_rev = (200 * 8) / 40
+#define MOTION_CONTROLLER_STEPS_PER_DEG_C                4.44f      // [steps/deg]  (motor_steps_per_rev * microsteps) / mm_per_rev = (200 * 8) / 360
+
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        400          // [mm/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_C          400          // [deg/s]
+
+#define MOTION_CONTROLLER_HOMING_DISTANCE              300          // Number of steps until homing position is guaranteed [mm]
 #define MOTION_CONTROLLER_MOTION_QUEUE_SIZE             10          // How many events can be saved in the queue
 
-// --------------------------------------------------
+#define MOTION_CONTROLLER_MAX_Z_ANGLE                   85.f
+#define MOTION_CONTROLLER_MIN_Z_ANGLE                   10.f
+
+// ----------------------------------------------------------------------------------------------------
 // STEPPER MOTOR
-// --------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 #define STEPPER_MOTOR_ACCELERATION                 8000.0f          // acceleration of the stepper [mm/s^2]
 
-// --------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 // COMMUNICATION
-// --------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 #define COMMUNICATION_RESPONSE_QUEUE_SIZE               10          // How many responses can be saved in the queue
+#define COMMUNICATION_RESPONSE_OK                       "ok"
+#define COMMUNICATION_RESPONSE_ERROR                    "error"
 
-
-// --------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 // GPIOs
-// --------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 
 // COM
 #define GPIO_UART0_TX                       12
@@ -81,9 +100,9 @@
 #define GPIO_LED_1                          28
 
 
-// --------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 // GCODE
-// --------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 
 #define GCODE_COMMAND_G   'G'
 #define GCODE_COMMAND_M   'M'
@@ -91,6 +110,6 @@
 #define GCODE_AXIS_X      'X'
 #define GCODE_AXIS_Y      'Y'
 #define GCODE_AXIS_Z      'Z'
-#define GCODE_AXIS_A      'A'
+#define GCODE_AXIS_C      'C'
 
 #define GCODE_FEED_RATE   'F'

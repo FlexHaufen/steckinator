@@ -17,13 +17,23 @@
 // *** NAMESPACE **
 namespace Steckinator {
 
+    using Deg = float;
+
+
     class Servo {
     public:
     
-        void Init(uint gpio) {
+        /**
+         * @brief Construct and fully initialise a servo motor.
+         * 
+         * @param gpio      gpio
+         * @param max       max range of the servo 
+         * @param min       min range of the servo
+         */
+        void Init(uint gpio, Deg max, Deg min) {
             m_gpio = gpio;
-            m_min_pulse = 1000.0f;  // very bad magic numbers
-            m_max_pulse = 2000.0f;  // change to defines
+            m_max = max;
+            m_min = min;
 
             gpio_init(m_gpio);
             gpio_set_function(m_gpio, GPIO_FUNC_PWM);
@@ -46,13 +56,13 @@ namespace Steckinator {
             m_wrap = wrap;
         }
 
-        void SetAngle(float angle_deg) {
-            if (angle_deg < 0.0f) angle_deg = 0.0f;
-            if (angle_deg > 180.0f) angle_deg = 180.0f;
+        void SetAngle(Deg angle_deg) {
+            
+            if (angle_deg < m_min) { angle_deg = m_min; }
+            if (angle_deg > m_max) { angle_deg = m_max; }
 
             // Map angle to pulse width
-            float pulse_us = m_min_pulse + (angle_deg / 180.0f) * (m_max_pulse - m_min_pulse);
-
+            float pulse_us = m_min_pulse + (angle_deg / m_max) * (m_max_pulse - m_min_pulse);
             SetPulseWidth(pulse_us);
         }
 
@@ -74,8 +84,11 @@ namespace Steckinator {
         uint m_channel;
         uint16_t m_wrap;
 
-        float m_min_pulse;
-        float m_max_pulse;
+        const float m_min_pulse =  500.0f;  // [us]
+        const float m_max_pulse = 2500.0f;  // [us]
+
+        Deg m_max = 0;
+        Deg m_min = 0;
     };
 
 }

@@ -21,7 +21,7 @@
 // *** NAMESPACE ***
 namespace Steckinator {
 
-    void StepperMotor::Init(PIO pio, uint stateMachineIndex, uint programOffset, uint pinStep, uint pinDir, uint stepsPerMm) {
+    void StepperMotor::Init(PIO pio, uint stateMachineIndex, uint programOffset, uint pinStep, uint pinDir, float stepsPerMm) {
         m_pio = pio;
         m_stateMachineIndex = stateMachineIndex;
         m_programOffset = programOffset;
@@ -46,6 +46,17 @@ namespace Steckinator {
 
         // DMA configuration
         m_dmaChannel = dma_claim_unused_channel(true);
+
+        // Initialize enable pin once
+        // the enable pin is shared across the stepper motors
+        // This is probably a bad solution, but it works so whatever 
+        static bool s_initEnablePin = false;
+        if (!s_initEnablePin) {
+            gpio_init(GPIO_M_EN);
+            gpio_set_dir(GPIO_M_EN, GPIO_OUT);
+            s_initEnablePin = true;
+        }
+
 
         LOG_INFO("Stepper initialized");
 
