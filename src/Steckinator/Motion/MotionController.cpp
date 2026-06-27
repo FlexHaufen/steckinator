@@ -50,6 +50,7 @@ namespace Steckinator {
     void MotionController::Update() {
         if (s_emergencyStopRequested) {
             ExecuteEmergencyStop();
+            s_emergencyStopRequested.store(false);
             return;
         }
 
