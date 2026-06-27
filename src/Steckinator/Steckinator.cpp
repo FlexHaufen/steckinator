@@ -70,8 +70,9 @@ namespace Steckinator {
                 // wait for command
                 auto c = uart.readLine();                                   // blocking
 
-                if (c == "emergency_stop") {
-
+                if (c == "stop") {
+                    MotionController::RequestEmergencyStop();
+                    uart.writeLine(COMMUNICATION_RESPONSE_OK);
                 }
                 else {
                     MotionQueue::Instance().Push(GCodeParser::ParseLine(c));

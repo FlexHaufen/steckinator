@@ -143,11 +143,9 @@ namespace Steckinator {
         MotionQueue::Instance().Clear();
 
         m_state = State::IDLE;
-        m_homingPhase = HomingPhase::PHASE_Z;
+        m_homingState.Clear();
         m_led_status.Off();
         DisableMotors();
-
-        ResponseQueue::Instance().Push(Response::ERROR);
 
         LOG_ERROR("Emergency stop executed");
     }

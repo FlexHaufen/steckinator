@@ -136,6 +136,7 @@ namespace Steckinator {
             bool axis_c_homed = false;
 
             bool Homed() { return axis_x_homed && axis_y_homed && axis_c_homed; }
+            void Clear() { axis_x_homed = false; axis_y_homed = false; axis_c_homed = false; }
         } m_homingState;
 
 
