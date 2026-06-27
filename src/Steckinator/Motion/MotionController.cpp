@@ -110,13 +110,13 @@ namespace Steckinator {
     void MotionController::ExecuteCommand(const MotionEvent& e) {
 
         switch (e.command) {
-            case MotionCommand::G0:         // intended fallthrough
+            //case MotionCommand::G0:         // intended fallthrough
             case MotionCommand::G1:
                 StartLinearMove(e);
                 m_state = State::EXECUTING_MOVE;
                 break;
             
-            case MotionCommand::G28:
+            case MotionCommand::G0:
                 StartHoming();
                 m_state = State::EXECUTING_HOMING;
                 break;
