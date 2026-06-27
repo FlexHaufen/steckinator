@@ -13,6 +13,7 @@
 // *** INCLUDES ***
 
 #include <functional>
+#include <atomic>
 
 #include "Steckinator/Config.h"
 
@@ -63,6 +64,13 @@ namespace Steckinator {
          * 
          */
         static void DisableMotors() { gpio_put(GPIO_M_EN, true); }
+
+        /**
+         * @brief Request an emergency stop from any thread/core
+         *
+         * The stop itself is executed in Update() on the motion core.
+         */
+        static void RequestEmergencyStop();
     
     private:
     
@@ -96,6 +104,12 @@ namespace Steckinator {
          * 
          */
         void ExecuteCommand_Homing();
+
+        /**
+         * @brief Abort all active motion immediately
+         *
+         */
+        void ExecuteEmergencyStop();
 
     
     private:
@@ -145,6 +159,8 @@ namespace Steckinator {
         float m_posY = 0.0f;                // [mm]
         float m_posC = 0.0f;                // [deg]
         float m_posZ = MOTION_CONTROLLER_MAX_Z_ANGLE;                // [deg]
+
+        static std::atomic<bool> s_emergencyStopRequested;
 
     };
 
