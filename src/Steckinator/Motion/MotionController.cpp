@@ -20,6 +20,7 @@
 // *** NAMESPACE ***
 namespace Steckinator {
 
+    std::atomic<bool> MotionController::s_resetRequested{false};
 
     void MotionController::Init() {
 
@@ -44,6 +45,13 @@ namespace Steckinator {
 
 
     void MotionController::Update() {
+
+        if (s_resetRequested.load()) {
+            s_resetRequested.store(false);
+            ExecuteReset();
+            return;
+        }
+
         switch (m_state) {
 
             case State::IDLE: {
@@ -66,7 +74,6 @@ namespace Steckinator {
                     //DisableMotors();
                     ResponseQueue::Instance().Push(Response::OK);           // FIXME (inj): This is currently also done in ExecuteCommand_Homing
                                                                             //              could this be done once? and not twice?
-
                 }
                 break;
 
@@ -78,6 +85,24 @@ namespace Steckinator {
             default:
                 break;
         }
+    }
+
+    void MotionController::RequestReset() {
+        s_resetRequested.store(true);
+    }
+
+    void MotionController::ExecuteReset() {
+        m_motorA.Stop();
+        m_motorB.Stop();
+        m_motorC.Stop();
+
+        MotionQueue::Instance().Clear();
+        m_state = State::IDLE;
+        m_homingPhase = HomingPhase::PHASE_Z;
+        m_led_status.Off();
+        DisableMotors();
+        ResponseQueue::Instance().Push(Response::ERROR);
+        //LOG_ERROR("Emergency stop executed");
     }
 
     void MotionController::ExecuteCommand(const MotionEvent& e) {

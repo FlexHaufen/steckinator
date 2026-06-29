@@ -58,6 +58,17 @@ namespace Steckinator {
             return item;
         }
 
+        /**
+         * @brief Removes all queued items
+         *
+         */
+        void Clear() {
+            T item;
+            while (queue_try_remove(&m_queue, &item)) {
+                // drain queue
+            }
+        }
+
     private:
         TSQueue() {
             queue_init(&m_queue, sizeof(T), Capacity);

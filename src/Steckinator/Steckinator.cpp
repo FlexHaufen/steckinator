@@ -49,14 +49,16 @@ namespace Steckinator {
         #if STECKINATOR_RUN_DEBUG_PROGRAM
             
             MotionQueue::Instance().Push(GCodeParser::ParseLine("G28"));
+            sleep_ms(3000);
+            MotionController::RequestReset();
             //MotionQueue::Instance().Push(GCodeParser::ParseLine("M10"));
-            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F1000"));
-            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F1000"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X200 F1000"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y200 F1000"));
             //MotionQueue::Instance().Push(GCodeParser::ParseLine("M11"));
-            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F1000"));
-            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F1000"));
-            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F1000"));
-            MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F1000"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 F1000"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 Y10 F1000"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X300 Y300 F1000"));
+            //MotionQueue::Instance().Push(GCodeParser::ParseLine("G1 X10 Y10 F1000"));
         
         #else
         
@@ -69,11 +71,18 @@ namespace Steckinator {
 
                 // wait for command
                 auto c = uart.readLine();                                   // blocking
-                MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
 
-                // wait for execution to finish
-                auto response = ResponseQueue::Instance().PopBlocking();    // blocking1
-                uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
+                if (c == "reset") {
+                    MotionController::RequestReset();
+                }
+                else {
+                    MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
+    
+                    // wait for execution to finish
+                    auto response = ResponseQueue::Instance().PopBlocking();    // blocking
+                    uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
+
+                }
 
                 sleep_ms(CORE1_IDLE_TIME);
             }
