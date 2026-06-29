@@ -168,7 +168,7 @@ namespace Steckinator {
                     m_posX = 0.f;
                     m_posY = 0.f;
 
-                    m_motorC.MoveRelative(-m_motorC.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), 100, StepperMotor::AccelerationMethod::NONE);
+                    m_motorC.MoveRelative(-m_motorC.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_C, StepperMotor::AccelerationMethod::NONE);
                     m_homingPhase = HomingPhase::PHASE_C;
                 }
                 break;

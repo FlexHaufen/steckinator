@@ -29,8 +29,8 @@
 #define MOTION_CONTROLLER_STEPS_PER_DEG_C                4.44f      // [steps/deg]  (motor_steps_per_rev * microsteps) / mm_per_rev = (200 * 8) / 360
 
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        100          // [mm/s]
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_C          100          // [deg/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        200          // [mm/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_C          400          // [deg/s]
 
 #define MOTION_CONTROLLER_HOMING_DISTANCE              400          // Number of steps until homing position is guaranteed [mm]
 #define MOTION_CONTROLLER_MOTION_QUEUE_SIZE             10          // How many events can be saved in the queue
