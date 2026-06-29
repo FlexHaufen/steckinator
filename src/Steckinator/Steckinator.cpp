@@ -74,6 +74,8 @@ namespace Steckinator {
 
                 if (c == "reset") {
                     MotionController::RequestReset();
+                    uart.writeLine(COMMUNICATION_RESPONSE_OK);
+                
                 }
                 else {
                     MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
