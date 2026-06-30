@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 // *** DEFINES ***
-#define LOG_ENABLE      true        // true: logger enabled
+#define LOG_ENABLE      false       // true: logger enabled
 
 
 #if LOG_ENABLE

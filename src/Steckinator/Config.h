@@ -30,7 +30,7 @@
 
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1         100          // [mm/s]
 #define MOTION_CONTROLLER_DEFAULT_FEED_RATE_G28        200          // [mm/s]
-#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_C          400          // [deg/s]
+#define MOTION_CONTROLLER_DEFAULT_FEED_RATE_C          600          // [deg/s]
 
 #define MOTION_CONTROLLER_HOMING_DISTANCE              400          // Number of steps until homing position is guaranteed [mm]
 #define MOTION_CONTROLLER_MOTION_QUEUE_SIZE             10          // How many events can be saved in the queue

@@ -25,6 +25,7 @@ namespace Steckinator {
         G0,                     // Rapid positioning    [x, y, z, c]
         G1,                     // Linear Interpolation [x, y, z, c, f]
         G28,                    // Home all axes
+        G29,                    // Home C axis
         M10,                    // Enable gripper
         M11                     // Disable gripper
     };

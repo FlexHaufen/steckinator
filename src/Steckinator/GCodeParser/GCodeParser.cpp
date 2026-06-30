@@ -43,6 +43,7 @@ namespace Steckinator {
                             case  0: event.command = MotionCommand::G0; break;
                             case  1: event.command = MotionCommand::G1; break;
                             case 28: event.command = MotionCommand::G28; break;
+                            case 29: event.command = MotionCommand::G29; break;
                             
                             default: 
                                 LOG_ERROR("Received invalid G__");

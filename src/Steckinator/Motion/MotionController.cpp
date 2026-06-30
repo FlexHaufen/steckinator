@@ -119,6 +119,12 @@ namespace Steckinator {
                 m_state = State::EXECUTING_HOMING;
                 break;
 
+            case MotionCommand::G29:
+                m_motorC.MoveRelative(-m_motorC.ToSteps(MOTION_CONTROLLER_HOMING_DISTANCE), MOTION_CONTROLLER_DEFAULT_FEED_RATE_C, StepperMotor::AccelerationMethod::NONE);
+                m_homingPhase = HomingPhase::PHASE_C;
+                m_state = State::EXECUTING_HOMING;
+                break;
+
             case MotionCommand::M10:
                 m_vacuumPump.On();
                 m_state = State::EXECUTING_MOVE;     
@@ -177,6 +183,7 @@ namespace Steckinator {
                 if (m_swC.Get()) {
 
                     m_motorC.Stop();
+                    m_posC = 0.f;
 
                     m_homingPhase = HomingPhase::PHASE_DONE;
                     m_state = State::IDLE;
@@ -209,14 +216,14 @@ namespace Steckinator {
         // Update absolute position
         m_posX += dX;
         m_posY += dY;
-        m_posZ = std::clamp(MOTION_CONTROLLER_MIN_Z_ANGLE, e.z.value_or(m_posZ), MOTION_CONTROLLER_MAX_Z_ANGLE);
         m_posC += dC;
+        m_posZ = std::clamp(MOTION_CONTROLLER_MIN_Z_ANGLE, e.z.value_or(m_posZ), MOTION_CONTROLLER_MAX_Z_ANGLE);
         
         // Queue movements
         if (stepsA != 0) { m_motorA.MoveRelative(stepsA, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1),  StepperMotor::AccelerationMethod::RAMP); }
         if (stepsB != 0) { m_motorB.MoveRelative(stepsB, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_G1),  StepperMotor::AccelerationMethod::RAMP); }
+        if (stepsC != 0) { m_motorC.MoveRelative(stepsC, e.f.value_or(MOTION_CONTROLLER_DEFAULT_FEED_RATE_C),   StepperMotor::AccelerationMethod::NONE); }
         m_servoZ.SetAngle(m_posZ);
-        if (stepsC != 0) { m_motorC.MoveRelative(stepsC, MOTION_CONTROLLER_DEFAULT_FEED_RATE_C, StepperMotor::AccelerationMethod::NONE); }
 
         return;
     }
