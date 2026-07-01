@@ -89,6 +89,7 @@ namespace Steckinator {
 
     void MotionController::RequestReset() {
         s_resetRequested.store(true);
+        LOG_INFO("MotionController: Reset requested");
     }
 
     void MotionController::ExecuteReset() {
@@ -101,8 +102,8 @@ namespace Steckinator {
         m_homingPhase = HomingPhase::PHASE_Z;
         m_led_status.Off();
         DisableMotors();
-        ResponseQueue::Instance().Push(Response::ERROR);
-        //LOG_ERROR("Emergency stop executed");
+        
+        LOG_INFO("MotionController: Reset executed");
     }
 
     void MotionController::ExecuteCommand(const MotionEvent& e) {

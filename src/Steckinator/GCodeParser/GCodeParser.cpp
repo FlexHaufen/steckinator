@@ -21,7 +21,12 @@
 namespace Steckinator {
 
 
-    MotionEvent GCodeParser::ParseLine(const std::string& line) {
+    std::optional<MotionEvent> GCodeParser::ParseLine(const std::string& line) {
+
+        if (line.empty()) {
+            LOG_ERROR("Received empty command");
+            return std::nullopt;
+        }
 
         MotionEvent event{};
         event.command = MotionCommand::INVALID;
@@ -64,6 +69,7 @@ namespace Steckinator {
                                 break;
                         }  
                     }
+                    break;
                 
                 case GCODE_AXIS_X:
                     event.x = std::atof(p_line + 1);
@@ -87,6 +93,11 @@ namespace Steckinator {
             }
             p_line++;
         }
+
+        if (event.command == MotionCommand::INVALID) {
+            return std::nullopt;
+        }
+
         return event;
 
     }

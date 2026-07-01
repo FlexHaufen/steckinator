@@ -13,6 +13,7 @@
 
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
+#include <algorithm>
 
 #include "Steckinator/Config.h"
 #include "Steckinator/Log/Log.h"
@@ -69,21 +70,49 @@ namespace Steckinator {
 
             while (true) {
 
-                // wait for command
-                auto c = uart.readLine();                                   // blocking
+                std::string command;
+                //char command_buffer[64];
+                //scanf("%s", command_buffer);                      
+                //command = std::string(command_buffer);              // blocking
+                command = uart.readLine();                          // blocking
 
-                if (c == "reset") {
+                // remove any carriage return
+                command.erase(std::remove_if(command.begin(), command.end(), [](char c) {
+                    return c == '\r' || c == '\n';
+                }), command.end());
+
+                uart.writeLine("received");
+                LOG_INFO("received");
+
+                if (command == "reset") {
                     MotionController::RequestReset();
+                    MotionQueue::Instance().Clear();
+                    ResponseQueue::Instance().Clear();
+
                     uart.writeLine(COMMUNICATION_RESPONSE_OK);
-                
+                    LOG_INFO(COMMUNICATION_RESPONSE_OK);
                 }
                 else {
-                    MotionQueue::Instance().Push(GCodeParser::ParseLine(c));
-    
-                    // wait for execution to finish
-                    auto response = ResponseQueue::Instance().PopBlocking();    // blocking
-                    uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
+                    // try to parse as GCode
+                    auto motionEvent = GCodeParser::ParseLine(command);
+                    if (!motionEvent) {
+                        uart.writeLine(COMMUNICATION_RESPONSE_ERROR);
+                        LOG_ERROR("Received invalid command");
+                    }
+                    else {
+                        MotionQueue::Instance().Push(motionEvent.value());
+                        // wait for execution to finish
+                        auto response = ResponseQueue::Instance().PopBlocking();    // blocking
+                        uart.writeLine(( response == Response::OK) ? COMMUNICATION_RESPONSE_OK : COMMUNICATION_RESPONSE_ERROR);
 
+                        if (response == Response::OK) {
+                            LOG_INFO("Command executed successfully");
+                        }
+                        else {
+                            LOG_ERROR("Command execution failed");
+                        }
+
+                    }
                 }
 
                 sleep_ms(CORE1_IDLE_TIME);

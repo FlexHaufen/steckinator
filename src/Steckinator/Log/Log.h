@@ -39,9 +39,9 @@
 
     #define LOG_WAIT_FOR_USB
 
-    #define LOG_DEBUG(x)
-    #define LOG_INFO(x)
-    #define LOG_WARN(x)
-    #define LOG_ERROR(x)
-    #define LOG_CRITICAL(x)
+    #define LOG_DEBUG(fmt, ...)
+    #define LOG_INFO(fmt, ...)
+    #define LOG_WARN(fmt, ...)
+    #define LOG_ERROR(fmt, ...)
+    #define LOG_CRITICAL(fmt, ...)
 #endif

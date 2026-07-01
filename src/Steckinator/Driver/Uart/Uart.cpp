@@ -36,8 +36,6 @@ namespace Steckinator {
     std::string Uart::readLine() {
         std::string result;
 
-        // TODO (flex): Dangerous this could be blocking.
-        //              Maybe use callback timer in case of hangup
         while (true) {
             if (uart_is_readable(m_uart)) {
                 char c = uart_getc(m_uart);
