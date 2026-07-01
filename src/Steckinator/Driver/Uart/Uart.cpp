@@ -33,8 +33,9 @@ namespace Steckinator {
         return;
     }
 
-    std::string Uart::readLine() {
+    std::optional<std::string> Uart::readLine() {
         std::string result;
+        constexpr size_t MAX_SIZE = 64;
 
         while (true) {
             if (uart_is_readable(m_uart)) {
@@ -45,6 +46,11 @@ namespace Steckinator {
                     result += c;
                 }
             }
+
+            if (result.size() >= MAX_SIZE) {    // Prevent excessive memory usage
+                return std::nullopt;
+            }
+
         }
         return result;
     }

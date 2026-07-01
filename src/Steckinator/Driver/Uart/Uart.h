@@ -14,6 +14,7 @@
 #include <hardware/uart.h>
 #include <hardware/gpio.h>
 #include <string>
+#include <optional>
 
 // *** NAMESPACE ***
 namespace Steckinator {
@@ -55,7 +56,7 @@ namespace Steckinator {
          * 
          * @return std::string  The string read
          */
-        std::string readLine();
+        std::optional<std::string> readLine();
 
     private:
 

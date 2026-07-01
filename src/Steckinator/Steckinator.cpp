@@ -74,8 +74,14 @@ namespace Steckinator {
                 //char command_buffer[64];
                 //scanf("%s", command_buffer);                      
                 //command = std::string(command_buffer);              // blocking
-                command = uart.readLine();                          // blocking
-
+                auto command_opt = uart.readLine();                          // blocking
+                if (!command_opt) {
+                    LOG_ERROR("UART readLine() failed");
+                    uart.writeLine(COMMUNICATION_RESPONSE_ERROR);
+                    continue;
+                }
+                command = command_opt.value();
+                
                 // remove any carriage return
                 command.erase(std::remove_if(command.begin(), command.end(), [](char c) {
                     return c == '\r' || c == '\n';
